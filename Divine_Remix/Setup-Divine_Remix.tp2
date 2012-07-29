@@ -1,7 +1,7 @@
 BACKUP   ~Divine_Remix/backup~    // location to store files for uninstall purposes
 AUTHOR   ~webmaster@gibberlings3.net or andyr@gibberlings3.net~  // email address displayed if install fails
 
-VERSION  ~v7~
+VERSION  ~v7.1~
 
 README   ~Divine_Remix/readme-Divine_Remix.html~
 
@@ -36,6 +36,11 @@ LANGUAGE
   ~czech~
   ~Divine_Remix/english/setup.tra~
   ~Divine_Remix/czech/setup.tra~
+LANGUAGE
+  ~French (by La Voix 2 la Sagesse)~
+  ~french~
+  ~Divine_Remix/english/setup.tra~
+  ~Divine_Remix/french/setup.tra~
 
 /////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
 /////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
@@ -283,7 +288,11 @@ COPY_EXISTING_REGEXP GLOB ~^sppr.+\.spl$~ ~override~
   WRITE_BYTE 0x21 ("%priesttype%" BOR 0b11000000)
   BUT_ONLY_IF_IT_CHANGES
 
-//fixes removed; changes are now generally descriptions and a few minor changes
+/////                                                  \\\\\
+///// renamed spell descriptions                       \\\\\
+/////                                                  \\\\\
+
+ACTION_IF NOT (MOD_IS_INSTALLED ~spell_rev/setup-spell_rev.tp2~ 0) BEGIN
 
 COPY_EXISTING ~sppr102.spl~ ~override~ // Command
   SAY UNIDENTIFIED_DESC @114
@@ -332,23 +341,6 @@ COPY_EXISTING ~sppr313.spl~ ~override~
 COPY_EXISTING ~sppr314.spl~ ~override~ // unholy blight
   SAY UNIDENTIFIED_DESC @132
 
-COPY_EXISTING ~sppr317.spl~ ~override~ // cure disease - doesn't cure blindness or deafness (DR change)
-  SAY UNIDENTIFIED_DESC @125
-  READ_LONG  0x64 "abil_off"
-  READ_SHORT 0x68 "abil_num"
-  READ_LONG  0x6a "fx_off"
-  FOR (loops = 0; loops < abil_num; loops = loops + 1) BEGIN
-    READ_SHORT ("%abil_off%" + 0x1e + (0x28 * "%loops%")) "abil_fx_num"
-    READ_SHORT ("%abil_off%" + 0x20 + (0x28 * "%loops%")) "abil_fx_idx"
-    FOR (index = 0 ; index < abil_fx_num ; index = index + 1) BEGIN // remove blind and deaf curing effects
-      READ_SHORT ("%fx_off%" +        (0x30 * ("%abil_fx_idx%" + "%index%"))) "opcode"
-      READ_LONG  ("%fx_off%" + 0x08 + (0x30 * ("%abil_fx_idx%" + "%index%"))) "icon"
-      PATCH_IF (("%opcode%" = 75) OR ("%opcode%" = 81) OR (("%opcode%" = 240) AND (("%icon%" = 8) OR ("%icon%" = 112)))) BEGIN // cure blind/deaf and icons for same
-        WRITE_BYTE ("%fx_off%" + 0x12 + (0x30 * ("%abil_fx_idx%" + "%index%"))) 0 // set probability to 0
-      END
-    END
-  END
-
 COPY_EXISTING ~sppr318.spl~ ~override~ // zone of sweet air
   SAY UNIDENTIFIED_DESC @133
 
@@ -361,29 +353,6 @@ COPY_EXISTING ~sppr402.spl~ ~override~ // Animal Summoning I
 COPY_EXISTING ~sppr407.spl~ ~override~ // protection from lightning
   SAY UNIDENTIFIED_DESC @139
 
-COPY_EXISTING ~sppr408.spl~ ~override/cdevl10.spl~ // Protection from evil 10'
-  WRITE_LONG 0x34 3
-  SAY UNIDENTIFIED_DESC @138
-
-COPY_EXISTING ~scrl5d.itm~ ~override~ // scroll of protection from evil 10' scroll should also cast revised spell
-  READ_LONG   0x64 "abil_off"
-  READ_SHORT  0x68 "abil_num"
-  READ_LONG   0x6a "fx_off"
-  FOR (index = 0 ; index < abil_num ; index = index + 1) BEGIN // looks for magical ability header
-    READ_BYTE  ("%abil_off%" +        ("%index%" * 0x38)) "type"
-    PATCH_IF ("%type%" = 3) BEGIN //magical ability
-      READ_SHORT ("%abil_off%" + 0x1e + ("%index%" * 0x38)) "abil_fx_num"
-      READ_SHORT ("%abil_off%" + 0x20 + ("%index%" * 0x38)) "abil_fx_idx"
-      FOR (index2 = 0 ; index2 < abil_fx_num ; index2 = index2 + 1) BEGIN // searches through fx for cast spell
-        READ_LONG  ("%fx_off%" + 0x14 + (("%abil_fx_idx%" + "%index2%") * 0x30)) "resref"
-        PATCH_IF ("%resref%" STRING_COMPARE_CASE "sppr408" = 0) BEGIN // refers to old pro-evil 10'
-          WRITE_ASCII ("%fx_off%" + 0x14 + (("%abil_fx_idx%" + "%index2%") * 0x30)) ~cdevl10~ // revised spell
-        END
-      END
-    END
-  END
-  BUT_ONLY_IF_IT_CHANGES
-
 COPY_EXISTING ~sppr409.spl~ ~override~ // death ward
   SAY UNIDENTIFIED_DESC @135
 
@@ -395,9 +364,6 @@ COPY_EXISTING ~sppr411.spl~ ~override~ // Poison
 
 COPY_EXISTING ~sppr412.spl~ ~override~ // holy power
   SAY UNIDENTIFIED_DESC @137
-
-COPY_EXISTING ~sppr413.spl~ ~override/cdnegpp.spl~ // Negative Plane Protection
-  WRITE_LONG 0x34 3
 
 COPY_EXISTING ~sppr415.spl~ ~override~ // Farsight
   SAY UNIDENTIFIED_DESC @136
@@ -413,10 +379,6 @@ COPY_EXISTING ~sppr505d.spl~ ~override~ // true seeing (druid)
 
 COPY_EXISTING ~sppr506.spl~ ~override~ // iron skins
   SAY UNIDENTIFIED_DESC @143
-
-COPY ~Divine_Remix/Core/sppr508.spl~ ~override~ // chaotic commands - major changes
-  SAY NAME1 #22903
-  SAY UNIDENTIFIED_DESC @168
 
 COPY_EXISTING ~sppr511.spl~ ~override~ // slay living
   SAY UNIDENTIFIED_DESC @146
@@ -459,6 +421,59 @@ COPY_EXISTING ~sppr711.spl~ ~override~ // regeneration
 
 COPY_EXISTING ~sppr717.spl~ ~override~ // creeping doom
   SAY UNIDENTIFIED_DESC @152
+
+END
+
+/////                                                  \\\\\
+///// changed spells                                   \\\\\
+/////                                                  \\\\\
+
+COPY_EXISTING ~sppr317.spl~ ~override~ // cure disease - doesn't cure blindness or deafness (DR change)
+  SAY UNIDENTIFIED_DESC @125
+  READ_LONG  0x64 "abil_off"
+  READ_SHORT 0x68 "abil_num"
+  READ_LONG  0x6a "fx_off"
+  FOR (loops = 0; loops < abil_num; loops = loops + 1) BEGIN
+    READ_SHORT ("%abil_off%" + 0x1e + (0x28 * "%loops%")) "abil_fx_num"
+    READ_SHORT ("%abil_off%" + 0x20 + (0x28 * "%loops%")) "abil_fx_idx"
+    FOR (index = 0 ; index < abil_fx_num ; index = index + 1) BEGIN // remove blind and deaf curing effects
+      READ_SHORT ("%fx_off%" +        (0x30 * ("%abil_fx_idx%" + "%index%"))) "opcode"
+      READ_LONG  ("%fx_off%" + 0x08 + (0x30 * ("%abil_fx_idx%" + "%index%"))) "icon"
+      PATCH_IF (("%opcode%" = 75) OR ("%opcode%" = 81) OR (("%opcode%" = 240) AND (("%icon%" = 8) OR ("%icon%" = 112)))) BEGIN // cure blind/deaf and icons for same
+        WRITE_BYTE ("%fx_off%" + 0x12 + (0x30 * ("%abil_fx_idx%" + "%index%"))) 0 // set probability to 0
+      END
+    END
+  END
+
+COPY_EXISTING ~sppr408.spl~ ~override/cdevl10.spl~ // Protection from evil 10'
+  WRITE_LONG 0x34 3
+  SAY UNIDENTIFIED_DESC @138
+
+COPY_EXISTING ~scrl5d.itm~ ~override~ // scroll of protection from evil 10' scroll should also cast revised spell
+  READ_LONG   0x64 "abil_off"
+  READ_SHORT  0x68 "abil_num"
+  READ_LONG   0x6a "fx_off"
+  FOR (index = 0 ; index < abil_num ; index = index + 1) BEGIN // looks for magical ability header
+    READ_BYTE  ("%abil_off%" +        ("%index%" * 0x38)) "type"
+    PATCH_IF ("%type%" = 3) BEGIN //magical ability
+      READ_SHORT ("%abil_off%" + 0x1e + ("%index%" * 0x38)) "abil_fx_num"
+      READ_SHORT ("%abil_off%" + 0x20 + ("%index%" * 0x38)) "abil_fx_idx"
+      FOR (index2 = 0 ; index2 < abil_fx_num ; index2 = index2 + 1) BEGIN // searches through fx for cast spell
+        READ_ASCII ("%fx_off%" + 0x14 + (("%abil_fx_idx%" + "%index2%") * 0x30)) "resref" // Ardanis: was READ_LONG
+        PATCH_IF ("%resref%" STRING_COMPARE_CASE "sppr408" = 0) BEGIN // refers to old pro-evil 10'
+          WRITE_ASCII ("%fx_off%" + 0x14 + (("%abil_fx_idx%" + "%index2%") * 0x30)) ~cdevl10~ // revised spell
+        END
+      END
+    END
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY_EXISTING ~sppr413.spl~ ~override/cdnegpp.spl~ // Negative Plane Protection
+  WRITE_LONG 0x34 3
+
+COPY ~Divine_Remix/Core/sppr508.spl~ ~override~ // chaotic commands - major changes
+  SAY NAME1 #22903
+  SAY UNIDENTIFIED_DESC @168
 
 /////                                                  \\\\\
 ///// new spells                                       \\\\\
