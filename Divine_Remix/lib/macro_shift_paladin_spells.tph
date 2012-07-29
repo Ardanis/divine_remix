@@ -1,0 +1,6 @@
+// shift paladin spells over, removes spells of level > 4
+DEFINE_PATCH_MACRO ~shift_paladin_spells~ BEGIN
+  REPLACE_TEXTUALLY
+    ~newline\([ %tab%]+[^ %tab%]+[ %tab%]+[^ %tab%]+[ %tab%]+[^ %tab%]+[ %tab%]+[^ %tab%]+[ %tab%]+[^ %tab%]+[ %tab%]+[^ %tab%]+[ %tab%]+[^ %tab%]+[ %tab%]+\)[^ %tab%].+~
+    ~newline ****        ****        ****        ****        ****        ****        ****        ****       \1****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****~
+END

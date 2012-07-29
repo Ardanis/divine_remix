@@ -1,0 +1,9 @@
+DEFINE_PATCH_MACRO ~spell_remove_evil~ BEGIN
+
+  REPLACE_TEXTUALLY ~GA_SPPR313~  ~****      ~ // holy smite
+  REPLACE_TEXTUALLY ~GA_SPPR609~  ~****      ~ // false dawn
+  REPLACE_TEXTUALLY ~GA_SPPR612~  ~****      ~ // bolt of glory
+  REPLACE_TEXTUALLY ~GA_SPPR710~  ~****      ~ // holy word
+  REPLACE_TEXTUALLY ~GA_CDALCRN~  ~****      ~ // alicorn lance, cdrmalcr, 2
+
+END

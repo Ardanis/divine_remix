@@ -1,0 +1,8 @@
+// append generic paladin spells
+DEFINE_PATCH_MACRO ~add_paladin_spells~ BEGIN
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+END

@@ -1,0 +1,140 @@
+// adjust spellbooks
+DEFINE_PATCH_MACRO ~spellbook_ranger~ BEGIN
+
+  READ_LONG 0x2A0 "sb_off"
+  READ_LONG 0x2A4 "sb_num"
+  READ_LONG 0x2A8 "meminfo_off"
+  READ_LONG 0x2B0 "ms_off"
+  READ_LONG 0x2B4 "ms_num"
+  READ_LONG 0x2B8 "slot_off"
+  READ_LONG 0x2BC "item_off"
+  READ_LONG 0x2C4 "fx_off"
+  SET "sb_delta" = 0
+  FOR (index = 0 ; index < ms_num ; index = index + 1) BEGIN // memorized spell adjustments
+    READ_ASCII ("%ms_off%" + ("%index%" * 0x0C)) "spell"
+    PATCH_IF (("SPPR102" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR104" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR106" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR107" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR108" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR109" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR111" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR113" STRING_COMPARE_CASE "%spell%" = 0)) BEGIN
+      SET "max" = 6
+      PATCH_IF (RANDOM (1 "%max%") = 1) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR101~
+      END ELSE
+      PATCH_IF (RANDOM (1 "%max%") = 2) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~CDCURSE~
+      END ELSE
+      PATCH_IF (RANDOM (1 "%max%") = 3) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR103~
+      END ELSE
+      PATCH_IF (RANDOM (1 "%max%") = 4) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR110~
+      END ELSE
+      PATCH_IF (RANDOM (1 "%max%") = 5) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR105~
+      END ELSE BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~CDFAERIE~
+      END
+    END ELSE
+    PATCH_IF (("SPPR201" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR203" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR205" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR206" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR208" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR209" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR210" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR211" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR213" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR214" STRING_COMPARE_CASE "%spell%" = 0)) BEGIN
+      SET "max" = 5
+      PATCH_IF (RANDOM (1 "%max%") = 1) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR207~
+      END ELSE
+      PATCH_IF (RANDOM (1 "%max%") = 2) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR202~
+      END ELSE
+      PATCH_IF (RANDOM (1 "%max%") = 3) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR204~
+      END ELSE
+      PATCH_IF (RANDOM (1 "%max%") = 4) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~CDALCRN~
+      END ELSE BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR212~
+      END
+    END ELSE
+    PATCH_IF (("SPPR301" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR304" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR306" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR308" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR309" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR310" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR311" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR312" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR313" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR314" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR318" STRING_COMPARE_CASE "%spell%" = 0)) BEGIN
+      SET "max" = 7
+      PATCH_IF (RANDOM (1 "%max%") = 1) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~NMCUREBD~
+      END ELSE
+      PATCH_IF (RANDOM (1 "%max%") = 2) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR302~
+      END ELSE
+      PATCH_IF (RANDOM (1 "%max%") = 3) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR303~
+      END ELSE
+      PATCH_IF (RANDOM (1 "%max%") = 4) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR307~
+      END ELSE
+      PATCH_IF (RANDOM (1 "%max%") = 5) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR305~
+      END ELSE
+      PATCH_IF (RANDOM (1 "%max%") = 6) BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR317~
+      END ELSE BEGIN
+        WRITE_ASCII ("%ms_off%" + (("%index%") * 0x0C)) ~SPPR319~
+      END
+    END
+  END
+  FOR (index = sb_num ; index > 0 ; index = index - 1) BEGIN // spellbook adjustments
+    READ_ASCII ("%sb_off%" + (("%index%" - 1) * 0x0C)) "spell"
+    PATCH_IF (("SPPR102" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR104" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR106" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR107" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR108" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR109" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR111" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR113" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR201" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR203" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR205" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR206" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR208" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR209" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR210" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR211" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR213" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR214" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR301" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR304" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR306" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR308" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR309" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR310" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR311" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR312" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR313" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR314" STRING_COMPARE_CASE "%spell%" = 0) OR
+              ("SPPR318" STRING_COMPARE_CASE "%spell%" = 0)) BEGIN
+      // deletes spells from spellbook. For non-joinables, this makes no difference.
+      // For joinables, they'll get the proper spells re-added upon joining.
+      DELETE_BYTES ("%sb_off%" + (("%index%" - 1) * 0x0C)) 0x0C
+      SET "sb_delta" = "%sb_delta%" + 1
+    END
+  END
+
+END

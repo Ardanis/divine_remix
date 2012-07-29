@@ -1,0 +1,15 @@
+// append generic druid spells
+DEFINE_PATCH_MACRO ~add_druid_spells~ BEGIN
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/an_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pl_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/we_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+END

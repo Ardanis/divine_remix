@@ -1,0 +1,7 @@
+DEFINE_PATCH_MACRO ~hla_remove_good~ BEGIN
+
+  REPLACE_TEXTUALLY
+    ~^xx      GA_SPPR727.+$~ // summon fallen deva
+    ~xx      ZZZZZZZZZZ     *          *         *          *         *            *            *             *~
+    
+END

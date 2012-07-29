@@ -1,0 +1,4097 @@
+BACKUP   ~Divine_Remix/backup~    // location to store files for uninstall purposes
+AUTHOR   ~webmaster@gibberlings3.net or andyr@gibberlings3.net~  // email address displayed if install fails
+
+VERSION  ~v7~
+
+README   ~Divine_Remix/readme-Divine_Remix.html~
+
+ALLOW_MISSING
+~plat20.itm~ // blue dragon plate
+~spcl233b.spl~
+~dgfaith.spl~
+~dgright.spl~
+~spcl907.spl~
+~spcl913.spl~
+~spcl914.spl~
+~spcl917.spl~
+
+~AMTCLE01.cre~ // Cleric of Lathander
+~AMTCLER0.cre~ // Cleric of Lathander
+~YSSOLD16.CRE~ // Cleric Of Talos
+
+ASK_EVERY_COMPONENT
+
+AUTO_TRA ~Divine_Remix/%s~
+LANGUAGE
+  ~English~
+  ~english~
+  ~Divine_Remix/english/setup.tra~
+LANGUAGE
+  ~Polski (by yarpen)~
+  ~polski~
+  ~Divine_Remix/english/setup.tra~
+  ~Divine_Remix/polski/setup.tra~
+LANGUAGE
+  ~Czech (by Neferit, Katie, and Ondrej)~
+  ~czech~
+  ~Divine_Remix/english/setup.tra~
+  ~Divine_Remix/czech/setup.tra~
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Divine Remix                                     \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @100 // component 0
+REQUIRE_PREDICATE NOT FILE_EXISTS_IN_GAME ~cdklos1.spl~ @5
+GROUP @10
+GROUP @11
+//GROUP @12
+GROUP @13
+
+INCLUDE ~Divine_Remix/lib/extra_regexp_vars.tph~
+
+/////                                                  \\\\\
+///// Adding ToB scripting stuff to SoA                \\\\\
+/////                                                  \\\\\
+
+// adding all ToB actions to action.ids unless already present
+APPEND ~action.ids~ ~31 SpellRES(S:RES*,O:Target*)~
+             UNLESS ~31 SpellRES(S:RES\*,O:Target\*)~
+APPEND ~action.ids~ ~95 SpellPointRES(S:RES*,P:Target*)~
+             UNLESS ~95 SpellPointRES(S:RES\*,P:Target\*)~
+APPEND ~action.ids~ ~113 ForceSpellRES(S:RES*,O:Target)~
+             UNLESS ~113 ForceSpellRES(S:RES\*,O:Target)~
+APPEND ~action.ids~ ~114 ForceSpellPointRES(S:RES*,P:Target)~
+             UNLESS ~114 ForceSpellPointRES(S:RES\*,P:Target)~
+APPEND ~action.ids~ ~147 RemoveSpellRES(S:Spell*)~
+             UNLESS ~147 RemoveSpellRES(S:Spell\*)~
+APPEND ~action.ids~ ~160 ApplySpellRES(S:RES*,O:Target)~
+             UNLESS ~160 ApplySpellRES(S:RES\*,O:Target)~
+APPEND ~action.ids~ ~181 ReallyForceSpellRES(S:RES*,O:Target)~
+             UNLESS ~181 ReallyForceSpellRES(S:RES\*,O:Target)~
+APPEND ~action.ids~ ~191 SpellNoDecRES(S:RES*,O:Target*)~
+             UNLESS ~191 SpellNoDecRES(S:RES\*,O:Target\*)~
+APPEND ~action.ids~ ~192 SpellPointNoDecRES(S:RES*,P:Target*)~
+             UNLESS ~192 SpellPointNoDecRES(S:RES\*,P:Target\*)~
+APPEND ~action.ids~ ~240 ReallyForceSpellDeadRES(S:RES*,O:Target)~
+             UNLESS ~240 ReallyForceSpellDeadRES(S:RES\*,O:Target)~
+APPEND ~action.ids~ ~318 ForceSpellRangeRES(S:RES*,O:Target)~
+             UNLESS ~318 ForceSpellRangeRES(S:RES\*,O:Target)~
+APPEND ~action.ids~ ~319 ForceSpellPointRangeRES(S:RES*,P:Target)~
+             UNLESS ~319 ForceSpellPointRangeRES(S:RES\*,P:Target)~
+APPEND ~action.ids~ ~337 ReallyForceSpellPointRES(S:RES*,P:Target*)~
+             UNLESS ~337 ReallyForceSpellPointRES(S:RES\*,P:Target\*)~
+COPY_EXISTING ~action.ids~ ~override~
+  REPLACE_TEXTUALLY ~^106 Shout(.*$~ ~106 Shout(I:ID*SHOUTIDS)~
+  BUT_ONLY_IF_IT_CHANGES
+
+// fixing kit.ids
+COPY_EXISTING ~kit.ids~ ~override~
+  REPLACE_TEXTUALLY ~.*\bTRUECLASS\b~              ~0x4000 TRUECLASS~
+  REPLACE_TEXTUALLY ~.*\bBERSERKER\b~              ~0x4001 BERSERKER~
+  REPLACE_TEXTUALLY ~.*\bWIZARDSLAYER\b~           ~0x4002 WIZARDSLAYER~
+  REPLACE_TEXTUALLY ~.*\bKENSAI\b~                 ~0x4003 KENSAI~
+  REPLACE_TEXTUALLY ~.*\bCAVALIER\b~               ~0x4004 CAVALIER~
+  REPLACE_TEXTUALLY ~.*\bINQUISITOR\b~             ~0x4005 INQUISITOR~
+  REPLACE_TEXTUALLY ~.*\bUNDEADHUNTER\b~           ~0x4006 UNDEADHUNTER~
+  REPLACE_TEXTUALLY ~.*\bMAGESCHOOL_ABJURER\b~     ~0x0040 MAGESCHOOL_ABJURER~
+  REPLACE_TEXTUALLY ~.*\bMAGESCHOOL_CONJURER\b~    ~0x0080 MAGESCHOOL_CONJURER~
+  REPLACE_TEXTUALLY ~.*\bMAGESCHOOL_DIVINER\b~     ~0x0100 MAGESCHOOL_DIVINER~
+  REPLACE_TEXTUALLY ~.*\bMAGESCHOOL_ENCHANTER\b~   ~0x0200 MAGESCHOOL_ENCHANTER~
+  REPLACE_TEXTUALLY ~.*\bMAGESCHOOL_ILLUSIONIST\b~ ~0x0400 MAGESCHOOL_ILLUSIONIST~
+  REPLACE_TEXTUALLY ~.*\bMAGESCHOOL_INVOKER\b~     ~0x0800 MAGESCHOOL_INVOKER~
+  REPLACE_TEXTUALLY ~.*\bMAGESCHOOL_NECROMANCER\b~ ~0x1000 MAGESCHOOL_NECROMANCER~
+  REPLACE_TEXTUALLY ~.*\bMAGESCHOOL_TRANSMUTER\b~  ~0x2000 MAGESCHOOL_TRANSMUTER~
+  REPLACE_TEXTUALLY ~.*\bMAGESCHOOL_GENERALIST\b~  ~0x4000 MAGESCHOOL_GENERALIST~
+  REPLACE_TEXTUALLY ~.*\bFERALAN\b~                ~0x4007 FERALAN~
+  REPLACE_TEXTUALLY ~.*\bSTALKER\b~                ~0x4008 STALKER~
+  REPLACE_TEXTUALLY ~.*\bBEASTMASTER\b~            ~0x4009 BEASTMASTER~
+  REPLACE_TEXTUALLY ~.*\bASSASIN\b~                ~0x400A ASSASIN~
+  REPLACE_TEXTUALLY ~.*\bBOUNTYHUNTER\b~           ~0x400B BOUNTYHUNTER~
+  REPLACE_TEXTUALLY ~.*\bSWASHBUCKLER\b~           ~0x400C SWASHBUCKLER~
+  REPLACE_TEXTUALLY ~.*\bBLADE\b~                  ~0x400D BLADE~
+  REPLACE_TEXTUALLY ~.*\bJESTER\b~                 ~0x400E JESTER~
+  REPLACE_TEXTUALLY ~.*\bSKALD\b~                  ~0x400F SKALD~
+  REPLACE_TEXTUALLY ~.*\bGODTALOS\b~               ~0x4013 GODTALOS~
+  REPLACE_TEXTUALLY ~.*\bGODHELM\b~                ~0x4014 GODHELM~
+  REPLACE_TEXTUALLY ~.*\bGODLATHANDER\b~           ~0x4015 GODLATHANDER~
+  REPLACE_TEXTUALLY ~.*\bTOTEMIC\b~                ~0x4010 TOTEMIC~
+  REPLACE_TEXTUALLY ~.*\bSHAPESHIFTER\b~           ~0x4011 SHAPESHIFTER~
+  REPLACE_TEXTUALLY ~.*\bBEASTFRIEND\b~            ~0x4012 BEASTFRIEND~
+  REPLACE_TEXTUALLY ~.*\bBARBARIAN\b~              ~0x0000 BARBARIAN~
+  REPLACE_TEXTUALLY ~.*\bWILDMAGE\b~               ~0x0000 WILDMAGE~
+  BUT_ONLY_IF_IT_CHANGES
+
+APPEND ~kit.ids~ ~0x4000 TRUECLASS~
+  UNLESS ~\bTRUECLASS\b~
+APPEND ~kit.ids~ ~0x0000 BARBARIAN~
+  UNLESS ~\bBARBARIAN\b~
+APPEND ~kit.ids~ ~0x0000 WILDMAGE~
+  UNLESS ~\bWILDMAGE\b~
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME ~shoutids.ids~ THEN BEGIN
+  COPY ~Divine_Remix/shoutids.ids~ ~override~
+END
+
+// additional ToB triggers for SoA
+APPEND ~trigger.ids~ ~0x00A1 SpellCastOnMeRES(S:Spell*,O:Caster*)~
+              UNLESS ~0x00A1 SpellCastOnMeRES(S:Spell\*,O:Caster\*)~
+APPEND ~trigger.ids~ ~0x0091 SpellCastRES(S:Spell*,O:Object*)~
+              UNLESS ~0x0091 SpellCastRES(S:Spell\*,O:Object\*)~
+APPEND ~trigger.ids~ ~0x00A6 SpellCastPriestRES(S:Spell*,O:Object*)~
+              UNLESS ~0x00A6 SpellCastPriestRES(S:Spell\*,O:Object\*)~
+APPEND ~trigger.ids~ ~0x00A7 SpellCastInnateRES(S:Spell*,O:Object*)~
+              UNLESS ~0x00A7 SpellCastInnateRES(S:Spell\*,O:Object\*)~
+APPEND ~trigger.ids~ ~0x4031 HaveSpellRES(S:Spell*)~
+              UNLESS ~0x4031 HaveSpellRES(S:Spell\*)~
+APPEND ~trigger.ids~ ~0x40D5 ActuallyInCombat()~
+              UNLESS ~0x40D5 ActuallyInCombat()~
+COPY_EXISTING ~trigger.ids~ ~override~
+  REPLACE_TEXTUALLY ~\bHeard(O:Object\*,I:ID\*)~
+                    ~Heard(O:Object*,I:ID*SHOUTIDS)~
+  BUT_ONLY_IF_IT_CHANGES
+
+//force WeiDU to reload changed ids files
+CLEAR_IDS_MAP
+
+/////                                                  \\\\\
+///// define some macroes for repeated patches         \\\\\
+/////                                                  \\\\\
+
+INCLUDE ~Divine_Remix/lib/macro_extend_clab_to_level_50.tph~
+INCLUDE ~Divine_Remix/lib/macro_remove_blank_lines_from_eof.tph~
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_add_cleric_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_add_druid_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_add_paladin_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_shift_paladin_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_add_ranger_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_shift_ranger_spells.tph~
+
+/////                                                  \\\\\
+///// update all bio & mod clabs w/ new sphere system  \\\\\
+/////                                                  \\\\\
+
+// reads all installed divine kits from kitlist.2da and gives them spells
+COPY_EXISTING ~kitlist.2da~ ~override~
+  COUNT_2DA_ROWS ~9~ "rows"
+  REPLACE_TEXTUALLY ~ROWNAME[ %tab%]+ROWNAME~ ~ROWNAME~
+  FOR ( index = 1 ; index < rows ; index = index + 1 ) BEGIN
+    READ_2DA_ENTRY "%index%" 5 9 "clab"
+    READ_2DA_ENTRY "%index%" 8 9 "class"
+    PATCH_IF (("%class%" = 3) OR ("%class%" = 6) OR ("%class%" = 11) OR ("%class%" = 12)) BEGIN // divine spellcaster
+      SET "exists" = 0
+      INNER_PATCH_FILE ~%clab%.2da~ BEGIN // check to make sure clab exists
+
+        PATCH_IF (SOURCE_SIZE > 0) BEGIN
+          SET "exists" = 1
+        END
+    
+      END
+      PATCH_IF ("%exists%" = 1) BEGIN
+        INNER_ACTION BEGIN
+
+          // extend CLAB to level 50 first
+          COPY_EXISTING ~%clab%.2da~ ~override~
+            LAUNCH_PATCH_MACRO ~extend_clab_to_level_50~ // extends CLAB to level 50
+            UNLESS ~41 +42 +43 +44 +45 +46 +47 +48 +49 +50~
+            BUT_ONLY_IF_IT_CHANGES
+
+          COPY_EXISTING ~%clab%.2da~ ~override~
+            PATCH_IF (SOURCE_SIZE > 0) BEGIN
+              LAUNCH_PATCH_MACRO ~remove_blank_lines_from_eof~ // remove blank lines
+              PATCH_IF ("%class%" = 3) BEGIN // clerics
+                LAUNCH_PATCH_MACRO ~add_cleric_spells~ // add generic cleric spells
+              END ELSE
+              PATCH_IF ("%class%" = 11) BEGIN // druids
+                LAUNCH_PATCH_MACRO ~add_druid_spells~ // add generic druid spells
+              END ELSE
+              PATCH_IF ("%class%" = 6) BEGIN // paladins
+                LAUNCH_PATCH_MACRO ~add_paladin_spells~ // add generic paladin spells
+                LAUNCH_PATCH_MACRO ~shift_paladin_spells~ // shift generic paladin spells
+              END ELSE BEGIN // rangers
+                LAUNCH_PATCH_MACRO ~add_ranger_spells~ // add generic ranger spells
+                LAUNCH_PATCH_MACRO ~shift_ranger_spells~ // shift generic ranger spells
+              END
+              LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+            END
+            BUT_ONLY_IF_IT_CHANGES
+        END
+      END
+    END
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+// extend base class CLABs to level 50 first
+COPY_EXISTING ~clabpr01.2da~ ~override~ // cleric
+              ~clabdr01.2da~ ~override~ // druid
+              ~clabpa01.2da~ ~override~ // paladin
+              ~clabrn01.2da~ ~override~ // ranger
+  LAUNCH_PATCH_MACRO ~extend_clab_to_level_50~ // extends CLAB to level 50
+  UNLESS ~41 +42 +43 +44 +45 +46 +47 +48 +49 +50~
+  BUT_ONLY_IF_IT_CHANGES
+
+// add spells to base cleric
+COPY_EXISTING ~clabpr01.2da~ ~override~
+  PATCH_IF (SOURCE_SIZE > 0) BEGIN
+    LAUNCH_PATCH_MACRO ~remove_blank_lines_from_eof~ // remove blank lines
+    LAUNCH_PATCH_MACRO ~add_cleric_spells~ // add generic cleric spells
+    LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+// add spells to base druid
+COPY_EXISTING ~clabdr01.2da~ ~override~
+  PATCH_IF (SOURCE_SIZE > 0) BEGIN
+    LAUNCH_PATCH_MACRO ~remove_blank_lines_from_eof~ // remove blank lines
+    LAUNCH_PATCH_MACRO ~add_druid_spells~ // add generic cleric spells
+    LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+// add spells to base paladin
+COPY_EXISTING ~clabpa01.2da~ ~override~
+  PATCH_IF (SOURCE_SIZE > 0) BEGIN
+    LAUNCH_PATCH_MACRO ~remove_blank_lines_from_eof~ // remove blank lines
+    LAUNCH_PATCH_MACRO ~add_paladin_spells~ // add generic cleric spells
+    LAUNCH_PATCH_MACRO ~shift_paladin_spells~ // shift generic ranger spells
+    LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+// add spells to base ranger
+COPY_EXISTING ~clabrn01.2da~ ~override~
+  PATCH_IF (SOURCE_SIZE > 0) BEGIN
+    LAUNCH_PATCH_MACRO ~remove_blank_lines_from_eof~ // remove blank lines
+    LAUNCH_PATCH_MACRO ~add_ranger_spells~ // add generic cleric spells
+    LAUNCH_PATCH_MACRO ~shift_ranger_spells~ // shift generic ranger spells
+    LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+/////                                                  \\\\\
+///// changes to existing priest and druid spells      \\\\\
+/////                                                  \\\\\
+
+// this regexp restricts all spells from all divine casters; spellbooks are rebuilt using the CLAB files
+COPY_EXISTING_REGEXP GLOB ~^sppr.+\.spl$~ ~override~
+  READ_BYTE  0x21 "priesttype"
+  WRITE_BYTE 0x21 ("%priesttype%" BOR 0b11000000)
+  BUT_ONLY_IF_IT_CHANGES
+
+//fixes removed; changes are now generally descriptions and a few minor changes
+
+COPY_EXISTING ~sppr102.spl~ ~override~ // Command
+  SAY UNIDENTIFIED_DESC @114
+
+COPY_EXISTING ~sppr104.spl~ ~override~ // Detect Evil
+  SAY UNIDENTIFIED_DESC @119
+
+COPY_EXISTING ~sppr109.spl~ ~override~ // Sanctuary
+  SAY UNIDENTIFIED_DESC @122
+
+COPY_EXISTING ~sppr113.spl~ ~override~ // Doom
+  SAY UNIDENTIFIED_DESC @121
+
+COPY_EXISTING ~sppr201.spl~ ~override~ // Aid
+  SAY UNIDENTIFIED_DESC @123
+
+COPY_EXISTING ~sppr202.spl~ ~override~ // Barkskin
+  SAY UNIDENTIFIED_DESC @154
+
+COPY_EXISTING ~sppr208.spl~ ~override~ // Hold Person
+  SAY UNIDENTIFIED_DESC @124
+
+COPY_EXISTING ~sppr214.spl~ ~override~ // DUHM
+  SAY UNIDENTIFIED_DESC @115
+
+COPY_EXISTING ~sppr303.spl~ ~override~ // dispel magic
+  SAY UNIDENTIFIED_DESC @126
+
+COPY_EXISTING ~sppr306.spl~ ~override~ // protection from fire
+  SAY UNIDENTIFIED_DESC @129
+
+COPY_EXISTING ~sppr307.spl~ ~override~ // remove curse
+  SAY UNIDENTIFIED_DESC @130
+
+COPY_EXISTING ~sppr308.spl~ ~override~ // remove paralysis
+  SAY UNIDENTIFIED_DESC @131
+
+COPY_EXISTING ~sppr309.spl~ ~override~ // invisibility purge
+  SAY UNIDENTIFIED_DESC @128
+
+// holy smite missing level 20 abilities, a few effects mistargeted and/or wrong duration at lev 6, 7
+COPY_EXISTING ~sppr313.spl~ ~override~
+  SAY UNIDENTIFIED_DESC @127
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY_EXISTING ~sppr314.spl~ ~override~ // unholy blight
+  SAY UNIDENTIFIED_DESC @132
+
+COPY_EXISTING ~sppr317.spl~ ~override~ // cure disease - doesn't cure blindness or deafness (DR change)
+  SAY UNIDENTIFIED_DESC @125
+  READ_LONG  0x64 "abil_off"
+  READ_SHORT 0x68 "abil_num"
+  READ_LONG  0x6a "fx_off"
+  FOR (loops = 0; loops < abil_num; loops = loops + 1) BEGIN
+    READ_SHORT ("%abil_off%" + 0x1e + (0x28 * "%loops%")) "abil_fx_num"
+    READ_SHORT ("%abil_off%" + 0x20 + (0x28 * "%loops%")) "abil_fx_idx"
+    FOR (index = 0 ; index < abil_fx_num ; index = index + 1) BEGIN // remove blind and deaf curing effects
+      READ_SHORT ("%fx_off%" +        (0x30 * ("%abil_fx_idx%" + "%index%"))) "opcode"
+      READ_LONG  ("%fx_off%" + 0x08 + (0x30 * ("%abil_fx_idx%" + "%index%"))) "icon"
+      PATCH_IF (("%opcode%" = 75) OR ("%opcode%" = 81) OR (("%opcode%" = 240) AND (("%icon%" = 8) OR ("%icon%" = 112)))) BEGIN // cure blind/deaf and icons for same
+        WRITE_BYTE ("%fx_off%" + 0x12 + (0x30 * ("%abil_fx_idx%" + "%index%"))) 0 // set probability to 0
+      END
+    END
+  END
+
+COPY_EXISTING ~sppr318.spl~ ~override~ // zone of sweet air
+  SAY UNIDENTIFIED_DESC @133
+
+COPY_EXISTING ~sppr319.spl~ ~override~ // summon insects
+  SAY UNIDENTIFIED_DESC @116
+
+COPY_EXISTING ~sppr402.spl~ ~override~ // Animal Summoning I
+  SAY UNIDENTIFIED_DESC @134
+
+COPY_EXISTING ~sppr407.spl~ ~override~ // protection from lightning
+  SAY UNIDENTIFIED_DESC @139
+
+COPY_EXISTING ~sppr408.spl~ ~override/cdevl10.spl~ // Protection from evil 10'
+  WRITE_LONG 0x34 3
+  SAY UNIDENTIFIED_DESC @138
+
+COPY_EXISTING ~scrl5d.itm~ ~override~ // scroll of protection from evil 10' scroll should also cast revised spell
+  READ_LONG   0x64 "abil_off"
+  READ_SHORT  0x68 "abil_num"
+  READ_LONG   0x6a "fx_off"
+  FOR (index = 0 ; index < abil_num ; index = index + 1) BEGIN // looks for magical ability header
+    READ_BYTE  ("%abil_off%" +        ("%index%" * 0x38)) "type"
+    PATCH_IF ("%type%" = 3) BEGIN //magical ability
+      READ_SHORT ("%abil_off%" + 0x1e + ("%index%" * 0x38)) "abil_fx_num"
+      READ_SHORT ("%abil_off%" + 0x20 + ("%index%" * 0x38)) "abil_fx_idx"
+      FOR (index2 = 0 ; index2 < abil_fx_num ; index2 = index2 + 1) BEGIN // searches through fx for cast spell
+        READ_LONG  ("%fx_off%" + 0x14 + (("%abil_fx_idx%" + "%index2%") * 0x30)) "resref"
+        PATCH_IF ("%resref%" STRING_COMPARE_CASE "sppr408" = 0) BEGIN // refers to old pro-evil 10'
+          WRITE_ASCII ("%fx_off%" + 0x14 + (("%abil_fx_idx%" + "%index2%") * 0x30)) ~cdevl10~ // revised spell
+        END
+      END
+    END
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY_EXISTING ~sppr409.spl~ ~override~ // death ward
+  SAY UNIDENTIFIED_DESC @135
+
+COPY_EXISTING ~sppr410.spl~ ~override~ // call woodland beings
+  SAY UNIDENTIFIED_DESC @155
+
+COPY_EXISTING ~sppr411.spl~ ~override~ // Poison
+  SAY UNIDENTIFIED_DESC @120
+
+COPY_EXISTING ~sppr412.spl~ ~override~ // holy power
+  SAY UNIDENTIFIED_DESC @137
+
+COPY_EXISTING ~sppr413.spl~ ~override/cdnegpp.spl~ // Negative Plane Protection
+  WRITE_LONG 0x34 3
+
+COPY_EXISTING ~sppr415.spl~ ~override~ // Farsight
+  SAY UNIDENTIFIED_DESC @136
+
+COPY_EXISTING ~sppr501.spl~ ~override~ // animal summoning ii
+  SAY UNIDENTIFIED_DESC @140
+
+COPY_EXISTING ~sppr505.spl~ ~override~ // true seeing (cleric)
+  SAY UNIDENTIFIED_DESC @147
+
+COPY_EXISTING ~sppr505d.spl~ ~override~ // true seeing (druid)
+  SAY UNIDENTIFIED_DESC @147
+
+COPY_EXISTING ~sppr506.spl~ ~override~ // iron skins
+  SAY UNIDENTIFIED_DESC @143
+
+COPY ~Divine_Remix/Core/sppr508.spl~ ~override~ // chaotic commands - major changes
+  SAY NAME1 #22903
+  SAY UNIDENTIFIED_DESC @168
+
+COPY_EXISTING ~sppr511.spl~ ~override~ // slay living
+  SAY UNIDENTIFIED_DESC @146
+
+COPY_EXISTING ~sppr512.spl~ ~override~ // greater command
+  SAY UNIDENTIFIED_DESC @141
+
+COPY_EXISTING ~sppr515.spl~ ~override~ // repulse undead (cleric)
+  SAY UNIDENTIFIED_DESC @145
+
+COPY_EXISTING ~sppr515D.spl~ ~override~ // repulse undead (druid)
+  SAY UNIDENTIFIED_DESC @145
+
+COPY_EXISTING ~sppr516.spl~ ~override~ // pixie dust
+  SAY UNIDENTIFIED_DESC @144
+
+COPY_EXISTING ~sppr517.spl~ ~override~ // insect plague
+  SAY UNIDENTIFIED_DESC @142
+
+COPY_EXISTING ~sppr602.spl~ ~override~ // animal summoning iii
+  SAY UNIDENTIFIED_DESC @148
+
+COPY_EXISTING ~sppr605.spl~ ~override~ // conjure fire elemental
+  SAY UNIDENTIFIED_DESC @149
+
+COPY_EXISTING ~sppr606.spl~ ~override~ // fire seeds
+  SAY UNIDENTIFIED_DESC @150
+
+COPY_EXISTING ~sppr702.spl~ ~override~ // conjure earth elemental
+  SAY UNIDENTIFIED_DESC @151
+
+COPY_EXISTING ~sppr703.spl~ ~override~ // gate
+  SAY UNIDENTIFIED_DESC @153
+
+COPY_EXISTING ~sppr709.spl~ ~override~ // confusion
+  SAY UNIDENTIFIED_DESC @117
+
+COPY_EXISTING ~sppr711.spl~ ~override~ // regeneration
+  SAY UNIDENTIFIED_DESC @118
+
+COPY_EXISTING ~sppr717.spl~ ~override~ // creeping doom
+  SAY UNIDENTIFIED_DESC @152
+
+/////                                                  \\\\\
+///// new spells                                       \\\\\
+/////                                                  \\\\\
+
+COPY_EXISTING ~statdesc.2da~ ~override~ // changes Protected from Evil icon description to Protection from Alignment
+  REPLACE ~17400~ @206
+
+COPY ~Divine_Remix/copy~  ~override~// BAMs, effs, etc. that don't need modification or strings
+
+COPY ~Divine_Remix/core/cdalcrn.spl~ ~override~  // Alicorn Lance (priest spell)
+  SAY NAME1 @102
+  SAY NAME2 @102
+  SAY UNIDENTIFIED_DESC @103
+  SAY DESC @103
+
+COPY ~Divine_Remix/core/cdbeast.spl~ ~override~  // Beast Claw
+     ~Divine_Remix/core/cdbeast.itm~ ~override~  // Beast Claw
+  SAY NAME1 @108
+  SAY NAME2 @108
+  SAY UNIDENTIFIED_DESC @109
+  SAY DESC @109
+
+COPY ~Divine_Remix/core/nmcausbd.spl~ ~override~ // cause blindness or deafness
+  SAY NAME1 @181
+  SAY NAME2 @181
+  SAY UNIDENTIFIED_DESC @182
+  SAY DESC @182
+
+COPY ~Divine_Remix/core/nmcausds.spl~ ~override~ // cause disease
+  SAY NAME1 @184
+  SAY NAME2 @184
+  SAY UNIDENTIFIED_DESC @185
+  SAY DESC @185
+
+COPY ~Divine_Remix/core/cdcauslw.spl~ ~override~  // Cause Light Wounds
+     ~Divine_Remix/core/cdcauslw.itm~ ~override~
+  SAY NAME1 @202
+  SAY NAME2 @202
+  SAY UNIDENTIFIED_DESC @203
+  SAY DESC @203
+
+COPY ~Divine_Remix/core/cdcausmw.spl~ ~override~  // Cause Medium Wounds
+     ~Divine_Remix/core/cdcausmw.itm~ ~override~
+  SAY NAME1 @204
+  SAY NAME2 @204
+  SAY UNIDENTIFIED_DESC @205
+  SAY DESC @205
+
+COPY_EXISTING ~critical.itm~ ~override~ // adjusts BAMs for existing 'Cause X Wounds' items
+  WRITE_ASCII 0x3A ~sppr510b~
+  READ_SHORT 0x68 "abil_num"
+  READ_LONG  0x6A "abil_off"
+  FOR (index = 0 ; index < abil_num ; index = index + 1) BEGIN
+    WRITE_ASCII (0x04 + "%abil_off%" + ("%index%" * 0x38)) ~sppr510b~
+  END
+
+COPY_EXISTING ~serious.itm~  ~override~ // adjusts BAMs for existing 'Cause X Wounds' items
+  WRITE_ASCII 0x3A ~sppr414b~
+  READ_SHORT 0x68 "abil_num"
+  READ_LONG  0x6A "abil_off"
+  FOR (index = 0 ; index < abil_num ; index = index + 1) BEGIN
+    WRITE_ASCII (0x04 + "%abil_off%" + ("%index%" * 0x38)) ~sppr414b~
+  END
+
+COPY_EXISTING ~harm.itm~     ~override~ // adjusts BAMs for existing 'Cause X Wounds' items
+  WRITE_ASCII 0x3A ~sppr608b~
+  READ_SHORT 0x68 "abil_num"
+  READ_LONG  0x6A "abil_off"
+  FOR (index = 0 ; index < abil_num ; index = index + 1) BEGIN
+    WRITE_ASCII (0x04 + "%abil_off%" + ("%index%" * 0x38)) ~sppr608b~
+  END
+
+COPY ~Divine_Remix/core/nmcurebd.spl~ ~override~ // cure blindness or deafness
+  SAY NAME1 @179
+  SAY NAME2 @179
+  SAY UNIDENTIFIED_DESC @180
+  SAY DESC @180
+
+ADD_PROJECTILE ~Divine_Remix/core/cdcurse.pro~
+
+COPY ~Divine_Remix/core/cdcurse.spl~ ~override~  // Curse
+  SAY NAME1 @104
+  SAY NAME2 @104
+  SAY UNIDENTIFIED_DESC @105
+  SAY DESC @105
+  WRITE_SHORT 0x98 "%cdcurse%"
+  SAY 0x2AE @104
+
+COPY ~Divine_Remix/core/cddtgood.spl~ ~override~  // Detect Good
+  SAY NAME1 @194
+  SAY NAME2 @194
+  SAY UNIDENTIFIED_DESC @195
+  SAY DESC @195
+
+COPY ~Divine_Remix/core/cddshel.spl~ ~override~  // Divine Shell
+  SAY NAME1 @166
+  SAY NAME2 @166
+  SAY UNIDENTIFIED_DESC @167
+  SAY DESC @167
+
+COPY ~Divine_Remix/core/cdfaerie.spl~ ~override~  // Faerie Fire (priest spell)
+  SAY NAME1 @112
+  SAY NAME2 @112
+  SAY UNIDENTIFIED_DESC @113
+  SAY DESC @113
+
+COPY ~Divine_Remix/core/nmimperv.spl~ ~override~  // Impervious Sanctity of Mind
+  SAY NAME1 @169
+  SAY NAME2 @169
+  SAY UNIDENTIFIED_DESC @170
+  SAY DESC @170
+
+COPY ~Divine_Remix/core/nmimpreg.spl~ ~override~  // Impregnable Mind
+  SAY NAME1 @171
+  SAY NAME2 @171
+  SAY UNIDENTIFIED_DESC @172
+  SAY DESC @172
+
+COPY ~Divine_Remix/core/cdmnbld.spl~ ~override~  // Moonblade (priest spell)
+  SAY NAME1 @110
+  SAY NAME2 @110
+  SAY UNIDENTIFIED_DESC @111
+  SAY DESC @111
+
+COPY ~Divine_Remix/core/cdmnbld.itm~ ~override~  // Moonblade (item)
+  SAY NAME1 @110
+  SAY NAME2 @110
+  SAY UNIDENTIFIED_DESC @110
+  SAY DESC @110
+
+COPY_EXISTING ~sppr107.spl~ ~override/cdprgood.spl~  // Protection from Good
+  SAY NAME1 @196
+  SAY NAME2 @196
+  SAY UNIDENTIFIED_DESC @197
+  SAY DESC @197
+  WRITE_ASCII 0x3a ~cdprgooc~
+  READ_LONG   0x64 "abil_off"
+  READ_SHORT  0x68 "abil_num"
+  READ_LONG   0x6a "fx_off"
+  READ_SHORT  0x70 "fx_num"
+  READ_SHORT ("%abil_off%" + 0x1e + (("%abil_num%" - 1) * 0x28)) "abil_fx_num"
+  READ_SHORT ("%abil_off%" + 0x20 + (("%abil_num%" - 1) * 0x28)) "abil_fx_idx"
+  FOR (index = 0 ; index < (abil_fx_num + abil_fx_idx) ; index = index + 1) BEGIN
+    READ_SHORT ("%fx_off%" + (0x30 * "%index%")) "opcode"
+    PATCH_IF ("%opcode%" = 139) BEGIN
+      SAY ("%fx_off%" + 0x04 + (0x30 * "%index%")) @201
+    END ELSE
+    PATCH_IF ("%opcode%" = 219) BEGIN
+      WRITE_LONG ("%fx_off%" + 0x04 + (0x30 * "%index%")) 1
+    END ELSE
+    PATCH_IF ("%opcode%" = 233) BEGIN
+      WRITE_LONG ("%fx_off%" + 0x04 + (0x30 * "%index%")) 2 // for detectable spells
+    END ELSE
+    PATCH_IF ("%opcode%" = 100) BEGIN
+      WRITE_LONG ("%fx_off%" + 0x04 + (0x30 * "%index%")) 156
+      WRITE_LONG ("%fx_off%" + 0x08 + (0x30 * "%index%")) 4
+    END
+  END
+  FOR (index2 = 0 ; index2 < abil_num ; index2 = index2 + 1) BEGIN
+    WRITE_ASCII ("%abil_off%" + 0x04 + ("%index2%" * 0x28)) ~cdprgoob~
+  END
+
+COPY_EXISTING ~sppr408.spl~ ~override/cdprgd10.spl~  // Protection from Good 10'
+  SAY NAME1 @198
+  SAY NAME2 @198
+  SAY UNIDENTIFIED_DESC @199
+  SAY DESC @199
+  WRITE_ASCII 0x3A ~cdprgd1c~
+  WRITE_LONG  0x34 3
+  READ_LONG   0x64 "abil_off"
+  READ_SHORT  0x68 "abil_num"
+  READ_LONG   0x6a "fx_off"
+  READ_SHORT  0x70 "fx_num"
+  READ_SHORT ("%abil_off%" + 0x1e + (("%abil_num%" - 1) * 0x28)) "abil_fx_num"
+  READ_SHORT ("%abil_off%" + 0x20 + (("%abil_num%" - 1) * 0x28)) "abil_fx_idx"
+  FOR (index = 0 ; index < (abil_fx_num + abil_fx_idx) ; index = index + 1) BEGIN
+    READ_SHORT ("%fx_off%" + (0x30 * "%index%")) "opcode"
+    PATCH_IF ("%opcode%" = 139) BEGIN
+      SAY ("%fx_off%" + 0x04 + (0x30 * "%index%")) @201
+    END ELSE
+    PATCH_IF ("%opcode%" = 219) BEGIN
+      WRITE_LONG ("%fx_off%" + 0x04 + (0x30 * "%index%")) 1
+    END ELSE
+    PATCH_IF ("%opcode%" = 233) BEGIN
+      WRITE_LONG ("%fx_off%" + 0x04 + (0x30 * "%index%")) 2 // for detectable spells
+    END ELSE
+    PATCH_IF ("%opcode%" = 100) BEGIN
+      WRITE_LONG ("%fx_off%" + 0x04 + (0x30 * "%index%")) 156
+      WRITE_LONG ("%fx_off%" + 0x08 + (0x30 * "%index%")) 4
+    END
+  END
+  FOR (index2 = 0 ; index2 < abil_num ; index2 = index2 + 1) BEGIN
+    WRITE_ASCII ("%abil_off%" + 0x04 + ("%index2%" * 0x28)) ~cdprgd1b~
+  END
+
+COPY ~Divine_Remix/core/nmresacd.spl~ ~override~  // Resist Acid and Corrosion
+  SAY NAME1 @173
+  SAY NAME2 @173
+  SAY UNIDENTIFIED_DESC @174
+  SAY DESC @174
+
+COPY ~Divine_Remix/core/nmstrstn.spl~ ~override~  // Strength of Stone
+  SAY NAME1 @175
+  SAY NAME2 @175
+  SAY UNIDENTIFIED_DESC @176
+  SAY DESC @176
+
+COPY ~Divine_Remix/core/cdsunsco.spl~ ~override~  // Sunscorch
+  SAY NAME1 @106
+  SAY NAME2 @106
+  SAY UNIDENTIFIED_DESC @107
+  SAY DESC @107
+
+COPY_EXISTING ~cdsuns1.eff~ ~override/cdsuns2.eff~ // extra effs for sunscorch undead damage
+              ~cdsuns2.eff~ ~override/cdsuns3.eff~
+              ~cdsuns3.eff~ ~override/cdsuns4.eff~
+              ~cdsuns4.eff~ ~override/cdsuns5.eff~
+              ~cdsuns5.eff~ ~override/cdsuns6.eff~
+              ~cdsuns6.eff~ ~override/cdsuns7.eff~
+              ~cdsuns7.eff~ ~override/cdsuns8.eff~
+              ~cdsuns8.eff~ ~override/cdsuns9.eff~
+              ~cdsuns9.eff~ ~override/cdsuns10.eff~
+  READ_LONG  0x18 "damage"
+  WRITE_LONG 0x18 ("%damage%" + 1)
+  WRITE_LONG 0x1c ("%damage%" + 1)
+
+/*
+not ready yet
+
+COPY ~Divine_Remix/core/cdanrage.spl~ ~override~  // Animal Rage
+  SAY NAME1 @209
+  SAY NAME2 @209
+  SAY UNIDENTIFIED_DESC @210
+  SAY DESC @210
+COMPILE ~Divine_Remix/core/cdanrage.baf~
+
+COPY ~Divine_Remix/core/cdblrage.spl~ ~override~  // Blood Rage
+  SAY NAME1 @211
+  SAY NAME2 @211
+  SAY UNIDENTIFIED_DESC @212
+  SAY DESC @212
+COPY ~Divine_Remix/core/cdblrage.eff~ ~override~
+     ~Divine_Remix/core/cdblrag1.eff~ ~override~
+  SAY 0x1C @213
+
+advanced faerue fire stuff. Not done.
+COPY ~Divine_Remix/cleric/cdfaerie.spl~ ~override~  // Faerie Fire (priest spell)
+  SAY NAME1 @112
+  SAY NAME2 @112
+  SAY UNIDENTIFIED_DESC @113
+  SAY DESC @113
+
+ADD_PROJECTILE ~Divine_Remix/cleric/cdfaerie.pro~
+
+COPY ~Divine_Remix/cleric/cdfaerin.spl~ ~override~  // Faerie Fire (night version)
+  SAY NAME1 @112
+  SAY NAME2 @112
+  SAY UNIDENTIFIED_DESC @113
+  SAY DESC @113
+  WRITE_SHORT 0x68 20
+  WRITE_LONG  0x6A (0x72 + (20 * 0x28))
+  WRITE_SHORT 0x82 20
+  WRITE_SHORT 0x92 362
+  WRITE_SHORT 0x98 "%cdfaerie%"
+  SET "loops" = 19
+  SET "loops2" = 19
+  WHILE ("%loops%" > 0) BEGIN // adds all spell effects
+    INSERT_BYTES 0x9A 0x30 // AC bonus thingie
+      WRITE_BYTE  0x9C 2
+      WRITE_BYTE  0x9D 4
+      WRITE_LONG  0x9E 0xFFFFFFFE
+      WRITE_BYTE  0xA7 1
+      WRITE_LONG  0xA8 ("%loops%" * 24)
+      WRITE_BYTE  0xAC 100
+    INSERT_BYTES 0x9A 0x30 // scripting state
+      WRITE_SHORT 0x9A 282
+      WRITE_BYTE  0x9C 2
+      WRITE_BYTE  0x9D 4
+      WRITE_LONG  0x9E 1
+      WRITE_LONG  0xA2 57
+      WRITE_BYTE  0xA7 1
+      WRITE_LONG  0xA8 ("%loops%" * 24)
+      WRITE_BYTE  0xAC 100
+    SET "subloop1" = 0
+    WHILE ("%subloop1%" < 7) BEGIN
+      INSERT_BYTES 0x9A 0x30
+        WRITE_SHORT 0x9A 7
+        WRITE_BYTE  0x9C 2
+        WRITE_BYTE  0x9D 4
+        WRITE_LONG  0x9E 27
+        WRITE_LONG  0xA2 "%subloop1%"
+        WRITE_BYTE  0xA7 1
+        WRITE_LONG  0xA8 ("%loops%" * 24)
+        WRITE_BYTE  0xAC 100
+      SET "subloop1" = ("%subloop1%" + 1)
+    END
+    SET "subloop2" = 0
+    WHILE ("%subloop2%" < 7) BEGIN
+      INSERT_BYTES 0x9A 0x30
+        WRITE_SHORT 0x9A 9
+        WRITE_BYTE  0x9C 2
+        WRITE_BYTE  0x9D 4
+        WRITE_BYTE  0x9F 47
+        WRITE_BYTE  0xA0 98
+        WRITE_BYTE  0xA1 147
+        WRITE_SHORT 0xA2 "%subloop2%"
+        WRITE_SHORT 0xA4 0x14
+        WRITE_BYTE  0xA7 1
+        WRITE_LONG  0xA8 ("%loops%" * 24)
+        WRITE_BYTE  0xAC 100
+      SET "subloop2" = ("%subloop2%" + 1)
+    END
+    INSERT_BYTES 0x9A 0x30 // play sound
+      WRITE_SHORT 0x9A 174
+      WRITE_BYTE  0x9C 2
+      WRITE_BYTE  0x9D 4
+      WRITE_BYTE  0xA7 1
+      WRITE_LONG  0xA8 1
+      WRITE_BYTE  0xAC 100
+      WRITE_ASCII 0xAE ~EFF_E02~
+    INSERT_BYTES 0x9A 0x30 // character color
+      WRITE_SHORT 0x9A 50
+      WRITE_BYTE  0x9C 2
+      WRITE_BYTE  0x9D 4
+      WRITE_BYTE  0x9F 128
+      WRITE_BYTE  0xA0 128
+      WRITE_BYTE  0xA1 128
+      WRITE_SHORT 0xA4 0x14
+      WRITE_BYTE  0xA7 1
+      WRITE_LONG  0xA8 ("%loops%" * 24)
+      WRITE_BYTE  0xAC 100
+    INSERT_BYTES 0x9A 0x30 // detect invisible
+      WRITE_SHORT 0x9A 116
+      WRITE_BYTE  0x9C 2
+      WRITE_BYTE  0xA7 1
+      WRITE_LONG  0xA8 1
+      WRITE_BYTE  0xAC 100
+    SET "loops" = "%loops%" - 1
+  END
+  WHILE ("%loops2%" > 0) BEGIN // adds all ability headers
+    INSERT_BYTES 0x72 0x28 // ranged ability
+      WRITE_BYTE  0x72 2
+      WRITE_SHORT 0x74 2
+      WRITE_ASCII 0x76 ~cdfaerib~
+      WRITE_BYTE  0x7E 4
+      WRITE_SHORT 0x80 80
+      WRITE_SHORT 0x82 "%loops2%"
+      WRITE_SHORT 0x88 6
+      WRITE_SHORT 0x8E 1
+      WRITE_SHORT 0x90 19
+      WRITE_SHORT 0x92 (19 * ("%loops2%" - 1))
+      WRITE_SHORT 0x94 1
+      WRITE_SHORT 0x98 "%cdfaerie%"
+    SET "loops2" = "%loops2%" - 1
+  END
+
+COPY_EXISTING ~cdfaerin.spl~ ~override/cdfaerid.spl~
+  SET "loops" = 20
+  WHILE ("%loops%" > 0) BEGIN
+    WRITE_LONG (0x366 + ("%loops%" * 0x390)) 0xFFFFFFFF
+    SET "loops" = ("%loops%" - 1)
+  END
+
+COPY ~Divine_Remix/cleric/cdfaer01.cre~ ~override~
+COPY_EXISTING ~cdfaer01.cre~ ~override/cdfaer02.cre~
+              ~cdfaer02.cre~ ~override/cdfaer03.cre~
+              ~cdfaer03.cre~ ~override/cdfaer04.cre~
+              ~cdfaer04.cre~ ~override/cdfaer05.cre~
+              ~cdfaer05.cre~ ~override/cdfaer06.cre~
+              ~cdfaer06.cre~ ~override/cdfaer07.cre~
+              ~cdfaer07.cre~ ~override/cdfaer08.cre~
+              ~cdfaer08.cre~ ~override/cdfaer09.cre~
+              ~cdfaer09.cre~ ~override/cdfaer10.cre~
+              ~cdfaer10.cre~ ~override/cdfaer11.cre~
+              ~cdfaer11.cre~ ~override/cdfaer12.cre~
+              ~cdfaer12.cre~ ~override/cdfaer13.cre~
+              ~cdfaer13.cre~ ~override/cdfaer14.cre~
+              ~cdfaer14.cre~ ~override/cdfaer15.cre~
+              ~cdfaer15.cre~ ~override/cdfaer16.cre~
+              ~cdfaer16.cre~ ~override/cdfaer17.cre~
+              ~cdfaer17.cre~ ~override/cdfaer18.cre~
+              ~cdfaer18.cre~ ~override/cdfaer19.cre~
+              ~cdfaer19.cre~ ~override/cdfaer20.cre~
+  READ_BYTE 0x234 "level"
+  WRITE_BYTE 0x234 ("%level%" + 1)
+
+COMPILE ~Divine_Remix/cleric/cdfaerie.baf~
+*/
+
+COPY_EXISTING ~spwi621.spl~ ~override/nmconair.spl~  // Conjure Air Elemental
+    SAY UNIDENTIFIED_DESC @214
+    SAY DESC @214
+    WRITE_SHORT 0x1c 2
+    WRITE_SHORT 0x1e 0
+    READ_BYTE   0x21 "priesttype"
+    WRITE_BYTE  0x21 ("%priesttype%" BOR 0b11000000)
+    WRITE_SHORT 0x34 7
+
+COPY_EXISTING ~spwi914.spl~ ~override/nmnrgdrn.spl~  // Energy Drain
+    SAY UNIDENTIFIED_DESC @215
+    SAY DESC @215
+    WRITE_SHORT 0x1c 2
+    WRITE_SHORT 0x1e 0
+    READ_BYTE   0x21 "priesttype"
+    WRITE_BYTE  0x21 ("%priesttype%" BOR 0b11000000)
+    WRITE_SHORT 0x34 7
+
+/////                                                  \\\\\
+///// HLA changes & holy symbol fixes                  \\\\\
+/////                                                  \\\\\
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // if ToB is installed
+
+  COPY_EXISTING ~clabpr02.2da~ ~override~
+                ~clabpr03.2da~ ~override~
+                ~clabpr04.2da~ ~override~
+    REPLACE_TEXTUALLY ~AP_SPCl93[123] ~ ~AP_CDHLYSYM~
+    BUT_ONLY_IF_IT_CHANGES
+
+  EXTEND_TOP ~baldur.bcs~   ~Divine_Remix/core/holysym.baf~
+  EXTEND_TOP ~baldur25.bcs~ ~Divine_Remix/core/holysym.baf~
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~    // macro for building HLA tables
+  INCLUDE ~Divine_Remix/lib/macro_add_cleric_hlas.tph~    // adds generic cleric HLAs
+  INCLUDE ~Divine_Remix/lib/macro_add_druid_hlas.tph~     // adds generic druid HLAs
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_evil.tph~    // removes inappropriate spells for evil deities
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_good.tph~    // removes inappropriate spells for good deities
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_neutral.tph~ // removes inappropriate spells for neutral deities
+
+  COPY_EXISTING ~luabbr.2da~ ~override~
+    SET_2DA_ENTRY  3 1 2 ~Cl1~  // changes to new HLA 2da for trueclass
+    SET_2DA_ENTRY 45 1 2 ~Cl2~  // changes to new HLA 2da for Talos kit
+    SET_2DA_ENTRY 46 1 2 ~Cl3~  // changes to new HLA 2da for Helm kit
+    SET_2DA_ENTRY 47 1 2 ~Cl4~  // changes to new HLA 2da for Lathander kit
+
+  COPY ~Divine_Remix/cleric/lucl1.2da~ ~override~           // Trueclass HLA file
+       ~Divine_Remix/cleric/lucm0.2da~ ~override~           // multiclass cleric-mage HLA file
+       ~Divine_Remix/cleric/lucr0.2da~ ~override~           // multiclass cleric-ranger  HLA file
+       ~Divine_Remix/cleric/luct0.2da~ ~override~           // multiclass cleric-thief  HLA file
+       ~Divine_Remix/cleric/lufc0.2da~ ~override~           // multiclass fighter-cleric  HLA file
+       ~Divine_Remix/cleric/lufmc.2da~ ~override~           // multiclass fighter-mage-cleric HLA file
+    LAUNCH_PATCH_MACRO ~add_cleric_hlas~ // add generic cleric HLAs
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY ~Divine_Remix/cleric/lucl1.2da~ ~override/lucl2.2da~ // Talos HLA file
+    LAUNCH_PATCH_MACRO ~add_cleric_hlas~ // add generic cleric HLAs
+    LAUNCH_PATCH_MACRO ~hla_remove_evil~ // removes inappropriate spells for evil deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY ~Divine_Remix/cleric/lucl1.2da~ ~override/lucl3.2da~ // Helm HLA file
+    LAUNCH_PATCH_MACRO ~add_cleric_hlas~    // add generic cleric HLAs
+    LAUNCH_PATCH_MACRO ~hla_remove_neutral~ // removes inappropriate spells for neutral deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~    // re-order HLAs, remove dupes, and re-index
+
+  COPY ~Divine_Remix/cleric/lucl1.2da~ ~override/lucl4.2da~ // Lathander HLA file
+    LAUNCH_PATCH_MACRO ~add_cleric_hlas~ // add generic cleric HLAs
+    LAUNCH_PATCH_MACRO ~hla_remove_good~ // removes inappropriate spells for good deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY ~Divine_Remix/druid/ludr1.2da~  ~override/ludr0.2da~ // Trueclass druid HLA file
+       ~Divine_Remix/druid/lufd0.2da~  ~override~           // multiclass fighter-druid HLA file
+    LAUNCH_PATCH_MACRO ~add_druid_hlas~  // add generic druid HLAs
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY_EXISTING ~sppr721.spl~ ~override~ // hla energy blades
+    SAY UNIDENTIFIED_DESC @158
+
+  COPY_EXISTING ~sppr722.spl~ ~override~ // hla storm of vengeance
+    SAY UNIDENTIFIED_DESC @159
+
+  COPY_EXISTING ~sppr723.spl~ ~override~ // hla elemental summoning
+    SAY UNIDENTIFIED_DESC @160
+
+  COPY_EXISTING ~sppr724.spl~ ~override~ // hla greater elemental summoning
+    SAY UNIDENTIFIED_DESC @161
+
+  COPY_EXISTING ~sppr726.spl~ ~override~ // hla summon deva
+    SAY UNIDENTIFIED_DESC @162
+
+  COPY_EXISTING ~sppr727.spl~ ~override~ // hla summon fallen deva
+    SAY UNIDENTIFIED_DESC @163
+
+  COPY_EXISTING ~sppr728.spl~ ~override~ // hla implosion
+    SAY UNIDENTIFIED_DESC @164
+
+  COPY_EXISTING ~sppr730.spl~  ~override~  // hla aura o' flaming death
+                ~sppr730d.spl~ ~override~
+    SAY UNIDENTIFIED_DESC @165
+
+  COPY_EXISTING ~sppr731.spl~ ~override~ // hla fire elemental transformation
+    SAY UNIDENTIFIED_DESC @157
+
+  COPY_EXISTING ~sppr732.spl~ ~override~ // hla earth elemental transformation
+    SAY UNIDENTIFIED_DESC @156
+
+END
+
+/////                                                  \\\\\
+///// adjusts existing divine casters ingame           \\\\\
+/////                                                  \\\\\
+
+// define spellbook macroes
+INCLUDE ~Divine_Remix/lib/macro_spellbook_talos.tph~
+INCLUDE ~Divine_Remix/lib/macro_spellbook_helm.tph~
+INCLUDE ~Divine_Remix/lib/macro_spellbook_lathander.tph~
+INCLUDE ~Divine_Remix/lib/macro_spellbook_cleric.tph~
+INCLUDE ~Divine_Remix/lib/macro_spellbook_cleric_ranger.tph~
+INCLUDE ~Divine_Remix/lib/macro_spellbook_druid.tph~
+INCLUDE ~Divine_Remix/lib/macro_spellbook_paladin.tph~
+INCLUDE ~Divine_Remix/lib/macro_spellbook_ranger.tph~
+INCLUDE ~Divine_Remix/lib/macro_spellbook_wrapup.tph~
+
+// first, properly kit nonjoinables
+COPY_EXISTING ~acolyte1.cre~ ~override~ // talon zogas
+              ~bhnalla.cre~  ~override~ // stormherald nallabir
+              ~c6cler3.cre~  ~override~ // cleric of talos
+              ~cldad.cre~    ~override~ // talon nirkhas
+              ~cltalp01.cre~ ~override~ // weather master
+              ~ltalos.cre~   ~override~ // drunken cleric of talos
+              ~nalla.cre~    ~override~ // stormherald nallabir
+              ~scyarryl.cre~ ~override~ // talon yarryl
+              ~talmiss.cre~  ~override~ // mistress arda
+              ~talvilon.cre~ ~override~ // acolyte vilon
+              ~vvpriest.cre~ ~override~ // priest of talos
+              ~yssold16.cre~ ~override~ // cleric of talos
+  PATCH_IF (SOURCE_SIZE > 0x2d3) BEGIN
+    LAUNCH_PATCH_MACRO ~spellbook_talos~  // use kit sphere restrictions anyway
+    LAUNCH_PATCH_MACRO ~spellbook_wrapup~ // final offset adjustments
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY_EXISTING ~acolyte3.cre~ ~override~ // watchknight aabir
+              ~bhelm.cre~    ~override~ // guardian vottnar
+              ~bhoisig.cre~  ~override~ // high watcher oisig
+              ~c6cler2.cre~  ~override~ // cleric of helm
+              ~helmbyr.cre~  ~override~ // acolyte byron
+              ~helmpr.cre~   ~override~ // sir donalus
+              ~oisig.cre~    ~override~ // high watcher oisig
+              ~sctelwyn.cre~ ~override~ // guardian telwyn
+  LAUNCH_PATCH_MACRO ~spellbook_helm~   // use kit sphere restrictions anyway
+  LAUNCH_PATCH_MACRO ~spellbook_wrapup~ // final offset adjustments
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY_EXISTING ~acolyte2.cre~ ~override~ // dawnbringer alvanna
+              ~amtcle01.cre~ ~override~ // cleric of lathander
+              ~amtcler0.cre~ ~override~ // cleric of lathander
+              ~arenthis.cre~ ~override~ // dawnlord arenthis
+              ~arval.cre~    ~override~ // high mornmaster arval
+              ~bharval.cre~  ~override~ // high mornmaster arval
+              ~c6cler1.cre~  ~override~ // cleric of lathander
+              ~cllatp01.cre~ ~override~ // dawnmmistress
+              ~cscleric.cre~ ~override~ // dawnmaster kreel
+              ~dawnmas.cre~  ~override~ // dawnmaster kreel
+              ~latlara.cre~  ~override~ // acolyte lara
+              ~scsain.cre~   ~override~ // dawnbringer sain
+  PATCH_IF (SOURCE_SIZE > 0x2d3) BEGIN
+    LAUNCH_PATCH_MACRO ~spellbook_lathander~ // use kit sphere restrictions anyway
+    LAUNCH_PATCH_MACRO ~spellbook_wrapup~    // final offset adjustments
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+// adjusting spellbooks is long ang ugly, so moved grunt work to external macro libraries
+COPY_EXISTING_REGEXP GLOB ~^.+\.cre$~ ~override~
+  READ_BYTE 0x273 "class" ELSE 0
+  PATCH_IF (("%class%" =   3) OR     // cleric
+            ("%class%" =   8) OR     // figher-cleric
+            ("%class%" =  14) OR     // cleric-mage
+            ("%class%" =  15) OR     // cleric-thief
+            ("%class%" =  17) OR     // figher-mage-cleric
+            ("%class%" = 204)) BEGIN // cleric_all
+    READ_LONG 0x244 "kit"
+    PATCH_IF (("%kit%" != 0x40130000) AND    // talos
+              ("%kit%" != 0x40140000) AND    // helm
+              ("%kit%" != 0x40150000)) BEGIN // lathander
+      LAUNCH_PATCH_MACRO ~spellbook_cleric~ // use kit sphere restrictions anyway
+      LAUNCH_PATCH_MACRO ~spellbook_wrapup~ // final offset adjustments
+    END
+  END ELSE
+  PATCH_IF ("%class%" = 18) BEGIN // cleric-ranger
+    LAUNCH_PATCH_MACRO ~spellbook_cleric_ranger~ // get ranger and cleric spheres
+    LAUNCH_PATCH_MACRO ~spellbook_wrapup~        // final offset adjustments
+  END ELSE 
+  PATCH_IF (("%class%" = 11) OR      // druid
+            ("%class%" = 16) OR      // fighter-druid
+            ("%class%" = 208)) BEGIN // druid_all
+    LAUNCH_PATCH_MACRO ~spellbook_druid~  // get druid spheres
+    LAUNCH_PATCH_MACRO ~spellbook_wrapup~ // final offset adjustments
+  END ELSE
+  PATCH_IF (("%class%" = 6) OR       // paladin
+            ("%class%" = 207)) BEGIN // paladin_all
+    LAUNCH_PATCH_MACRO ~spellbook_paladin~ // get paladin spheres
+    LAUNCH_PATCH_MACRO ~spellbook_wrapup~  // final offset adjustments
+  END ELSE
+  PATCH_IF (("%class%" = 6) OR       // ranger
+            ("%class%" = 207)) BEGIN // ranger_all
+    LAUNCH_PATCH_MACRO ~spellbook_ranger~ // get ranger spheres
+    LAUNCH_PATCH_MACRO ~spellbook_wrapup~ // final offset adjustments
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Kit removing components                          \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @5000 DESIGNATED 50
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+SUBCOMPONENT @5002
+GROUP @10
+GROUP @11
+//GROUP @12
+GROUP @13
+
+COPY ~Divine_Remix/mkr/cleric/mod~ ~override~
+
+BEGIN @5001
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+SUBCOMPONENT @5002
+GROUP @10
+GROUP @11
+//GROUP @12
+GROUP @13
+
+COPY ~Divine_Remix/mkr/cleric/all~ ~override~
+
+BEGIN @5000
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+SUBCOMPONENT @5003
+GROUP @10
+GROUP @11
+//GROUP @12
+GROUP @13
+
+COPY ~Divine_Remix/mkr/druid/mod~ ~override~
+
+BEGIN @5001
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+SUBCOMPONENT @5003
+GROUP @10
+GROUP @11
+//GROUP @12
+GROUP @13
+
+COPY ~Divine_Remix/mkr/druid/all~ ~override~
+
+/* no need for these quite yet
+BEGIN @5000
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+SUBCOMPONENT @5004
+GROUP @10
+GROUP @11
+//GROUP @12
+GROUP @13
+
+COPY ~Divine_Remix/mkr/paladin/mod~ ~override~
+
+BEGIN @5001
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+SUBCOMPONENT @5004
+GROUP @10
+GROUP @11
+//GROUP @12
+GROUP @13
+
+COPY ~Divine_Remix/mkr/paladin/all~ ~override~
+*/
+BEGIN @5000
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+SUBCOMPONENT @5005
+GROUP @10
+GROUP @11
+//GROUP @12
+GROUP @13
+
+COPY ~Divine_Remix/mkr/ranger/mod~ ~override~
+
+BEGIN @5001
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+SUBCOMPONENT @5005
+GROUP @10
+GROUP @11
+//GROUP @12
+GROUP @13
+
+COPY ~Divine_Remix/mkr/ranger/all~ ~override~
+
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Cleric Remix                                     \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @10000 DESIGNATED 100
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+
+COPY ~Divine_Remix/cleric/copy/mxsplprs.2da~ ~override~
+     ~Divine_Remix/cleric/copy/cdihelm.bam~  ~override~
+     ~Divine_Remix/cleric/copy/cdilath.bam~  ~override~
+     ~Divine_Remix/cleric/copy/cditalos.bam~ ~override~
+     ~Divine_Remix/cleric/copy/cdvngn4.spl~  ~override~
+
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_add_cleric_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_evil.tph~    // removes inappropriate spells for evil deities
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_good.tph~    // removes inappropriate spells for good deities
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_neutral.tph~ // removes inappropriate spells for neutral deities
+
+// revised generic cleric
+COPY_EXISTING ~Divine_Remix/cleric/copy/clabpr01.2da~ ~override~
+  LAUNCH_PATCH_MACRO ~add_cleric_spells~ // add generic cleric spells
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+// revised stormlord
+COPY_EXISTING ~Divine_Remix/cleric/copy/clabpr02.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/an_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/as_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cs_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wa_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/we_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cr_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~spell_remove_evil~ // removes inappropriate spells for evil deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+// revised watcher
+COPY_EXISTING ~Divine_Remix/cleric/copy/clabpr03.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/as_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wd_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cr_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wa_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~spell_remove_neutral~ // removes inappropriate spells for neutral deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+// revised morninglord
+COPY_EXISTING ~Divine_Remix/cleric/copy/clabpr04.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/as_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cm_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pl_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/th_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wd_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/we_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~spell_remove_good~ // removes inappropriate spells for good deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+//APPEND ~stats.ids~ ~213 CDFAERIE~
+
+/////                                                  \\\\\
+///// universal elements for kit priests               \\\\\
+/////                                                  \\\\\
+
+COPY_EXISTING ~alignmnt.2da~ ~override~
+  SET_2DA_ENTRY 44 3 10 ~0~  // Changes to Talos alignment restrictions
+  SET_2DA_ENTRY 44 8 10 ~1~
+  SET_2DA_ENTRY 45 1 10 ~1~  // Changes to Helm alignment restrictions
+  SET_2DA_ENTRY 45 3 10 ~1~
+  SET_2DA_ENTRY 45 8 10 ~0~
+  SET_2DA_ENTRY 46 5 10 ~1~  // Changes to Lathander alignment restrictions
+
+COPY_EXISTING ~kitlist.2da~ ~override~
+  SET_2DA_ENTRY 19  2  9 ~Talos1~
+  SET_2DA_ENTRY 19  3  9 ~Talos2~
+  SET_2DA_ENTRY 19  4  9 ~Talos3~
+  SET_2DA_ENTRY 20  2  9 ~Helm1~
+  SET_2DA_ENTRY 20  3  9 ~Helm2~
+  SET_2DA_ENTRY 20  4  9 ~Helm3~
+  SET_2DA_ENTRY 21  2  9 ~Lathander1~
+  SET_2DA_ENTRY 21  3  9 ~Lathander2~
+  SET_2DA_ENTRY 21  4  9 ~Lathander3~
+  REPLACE ~Talos1~ @10002
+  REPLACE ~Talos2~ @10188
+  REPLACE ~Talos3~ @10171
+  REPLACE ~Helm1~ @10003
+  REPLACE ~Helm2~ @10189
+  REPLACE ~Helm3~ @10184
+  REPLACE ~Lathander1~ @10004
+  REPLACE ~Lathander2~ @10190
+  REPLACE ~Lathander3~ @10179
+
+COPY_EXISTING ~cdvngn4.spl~ ~override/cdvngn5.spl~     // adds lvl 5 spell slot for non-kit priests
+  WRITE_LONG 0xA2 16
+
+COPY_EXISTING ~cdvngn4.spl~ ~override/cdvngn6.spl~     // adds lvl 6 spell slot for non-kit priests
+  WRITE_LONG 0xA2 32
+
+COPY_EXISTING ~cdvngn4.spl~ ~override/cdvngn7.spl~     // adds lvl 7 spell slot for non-kit priests
+  WRITE_LONG 0xA2 64
+
+/////                                                  \\\\\
+///// Changes to HLAs and holy symbols for ToB         \\\\\
+/////                                                  \\\\\
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // if ToB is installed
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~    // macro for building HLA tables
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_evil.tph~    // removes inappropriate spells for evil deities
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_good.tph~    // removes inappropriate spells for good deities
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_neutral.tph~ // removes inappropriate spells for neutral deities
+
+  COPY ~Divine_Remix/cleric/lucl2.2da~ ~override~ // Talos HLA file
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/an_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/as_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cs_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/co_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ex_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ea_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ee_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ef_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ew_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ne_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/su_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/wa_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/we_hla.2da~
+    LAUNCH_PATCH_MACRO ~hla_remove_evil~ // removes inappropriate spells for evil deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY ~Divine_Remix/cleric/lucl3.2da~ ~override~ // Helm HLA file
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/as_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/co_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/di_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/gu_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/pr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/sn_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/wd_hla.2da~
+    LAUNCH_PATCH_MACRO ~hla_remove_neutral~ // removes inappropriate spells for neutral deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY ~Divine_Remix/cleric/lucl4.2da~ ~override~ // Lathander HLA file
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/as_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cm_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ex_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ea_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ee_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ef_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ew_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ne_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/pl_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/sn_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/th_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/wd_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/we_hla.2da~
+    LAUNCH_PATCH_MACRO ~hla_remove_good~ // removes inappropriate spells for good deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY_EXISTING ~clabpr02.2da~ ~override~
+                ~clabpr03.2da~ ~override~
+                ~clabpr04.2da~ ~override~
+    SET_2DA_ENTRY 1 25 51 ~AP_CDHLYSYM~
+
+  COPY_EXISTING ~spcl900.spl~ ~override/cdprwrl.spl~ // hla whirlwind
+    SAY UNIDENTIFIED_DESC @10174
+
+  COPY_EXISTING ~spcl906.spl~ ~override/cdprpwr.spl~ // hla power attack
+    SAY UNIDENTIFIED_DESC @10172
+
+  COPY_EXISTING ~spcl907.spl~ ~override/cdprhdy.spl~ // hla hardiness
+    SAY UNIDENTIFIED_DESC @10173
+
+  COPY_EXISTING ~spcl913.spl~ ~override/cdprevd.spl~ // hla evasion
+    SAY UNIDENTIFIED_DESC @10176
+
+  COPY_EXISTING ~spcl917.spl~ ~override/cdpravd.spl~ // hla avoid death
+    SAY UNIDENTIFIED_DESC @10175
+
+  COPY ~Divine_Remix/cleric/cdlthla.spl~ ~override~ // Lathander's Renewal
+    SAY NAME1 @10192
+    SAY NAME2 @10192
+    SAY UNIDENTIFIED_DESC @10193
+    SAY DESC @10193
+
+  COPY ~Divine_Remix/cleric/cdprscr.spl~ ~override~ // scribe scrolls
+    SAY NAME1 #70282
+    SAY NAME2 #70282
+    SAY UNIDENTIFIED_DESC @10102
+    SAY DESC @10102
+
+  COPY_EXISTING ~belt12.itm~ ~override~ // Lathander Holy symbol
+    SAY UNIDENTIFIED_DESC @10183
+    SAY DESC @10183
+    READ_BYTE  0x1E "use1"
+    WRITE_BYTE 0x1E ("%use1%" BAND 0b11110111) // unusable by evil alignments
+
+  COPY_EXISTING ~belt13.itm~ ~override~ // Helm Holy Symbol
+    SAY UNIDENTIFIED_DESC @10187
+    SAY DESC @10187
+    READ_BYTE  0x1E "use1"
+    WRITE_BYTE 0x1E (("%use1%" BAND 0b11111001) BOR 0b00000001) // unusable by chaotic alignments
+
+  COPY_EXISTING ~belt14.itm~ ~override~ // Talos holy symbol
+    SAY UNIDENTIFIED_DESC @10182
+    SAY DESC @10182
+    READ_BYTE  0x1E "use1"
+    WRITE_BYTE 0x1E (("%use1%" BAND 0b11110111) BOR 0b00010000) // unusable by lawful and good alignments
+
+END
+
+/////                                                  \\\\\
+///// adding innate abilities                          \\\\\
+/////                                                  \\\\\
+
+COPY ~Divine_Remix/cleric/cdtlers.spl~ ~override~ // electrical resistance
+  SAY NAME1 @10166
+  SAY NAME2 @10166
+  SAY UNIDENTIFIED_DESC @10166
+  SAY DESC @10166
+
+COPY ~Divine_Remix/cleric/cdtldst.spl~ ~override~ // destructive blow
+  SAY NAME1 @10169
+  SAY NAME2 @10169
+  SAY UNIDENTIFIED_DESC @10170
+  SAY DESC @10170
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~spwi324.spl~ ~override/cdlthun.spl~ // hold undead innate
+              ~sppr503.spl~ ~override/cdltflm.spl~ // flame strike innate
+              ~sppr607.spl~ ~override/cdlthel.spl~ // heal innate
+              ~sppr713.spl~ ~override/cdltgrs.spl~ // greater restoration innate
+              ~sppr304.spl~ ~override/cdhmglp.spl~ // glyph of warding innate
+              ~sppr415.spl~ ~override/cdhmfst.spl~ // farsight innate
+              ~spwi511.spl~ ~override/cdhmpnw.spl~ // protection from normal weapons innate
+              ~sppr505.spl~ ~override/cdhmtse.spl~ // true seeing innate
+              ~spwi708.spl~ ~override/cdhmmnt.spl~ // mantle innate
+              ~spwi502.spl~ ~override/cdtlcld.spl~ // cloudkill innate
+              ~spwi615.spl~ ~override/cdtlcnl.spl~ // chain lightning innate
+              ~sppr720.spl~ ~override/cdtlqak.spl~ // earthquake innate
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+/////                                                  \\\\\
+///// Spirit weapons                                   \\\\\
+/////                                                  \\\\\
+
+COPY ~Divine_Remix/cleric/cdltmac.spl~ ~override~  // Lathander's Mace (innate spell)
+  SAY NAME1 @10180
+  SAY NAME2 @10180
+  SAY UNIDENTIFIED_DESC @10181
+  SAY DESC @10181
+
+COPY ~Divine_Remix/cleric/cdltmc0.itm~ ~override~  // Lathander's Mace +0
+  SAY NAME1 @10180
+  SAY NAME2 @10180
+  SAY UNIDENTIFIED_DESC @10181
+  SAY DESC @10181
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~cdltmc0.itm~ ~override/cdltmc1.itm~  // lathander's mace +1
+              ~cdltmc0.itm~ ~override/cdltmc2.itm~  // lathander's mace +2
+              ~cdltmc0.itm~ ~override/cdltmc3.itm~  // lathander's mace +3
+              ~cdltmc0.itm~ ~override/cdltmc4.itm~  // lathander's mace +4
+              ~cdltmc0.itm~ ~override/cdltmc5.itm~  // lathander's mace +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C ("%weap_idx%" + 1)
+  WRITE_SHORT 0x84 (7 - "%weap_idx%")
+
+COPY ~Divine_Remix/cleric/cdhmbst.spl~ ~override~  // Bastard Sword of Helm (innate spell)
+  SAY NAME1 @10185
+  SAY NAME2 @10185
+  SAY UNIDENTIFIED_DESC @10186
+  SAY DESC @10186
+
+COPY ~Divine_Remix/cleric/cdhmbs0.itm~ ~override~  // Bastard Sword +0
+  SAY NAME1 @10185
+  SAY NAME2 @10185
+  SAY UNIDENTIFIED_DESC @10186
+  SAY DESC @10186
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~cdhmbs0.itm~ ~override/cdhmbs1.itm~  // bastard sword +1
+              ~cdhmbs0.itm~ ~override/cdhmbs2.itm~  // bastard sword +2
+              ~cdhmbs0.itm~ ~override/cdhmbs3.itm~  // bastard sword +3
+              ~cdhmbs0.itm~ ~override/cdhmbs4.itm~  // bastard sword +4
+              ~cdhmbs0.itm~ ~override/cdhmbs5.itm~  // bastard sword +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C "%weap_idx%"
+  WRITE_SHORT 0x84 (8 - "%weap_idx%")
+
+COPY ~Divine_Remix/cleric/cdtlspr.spl~ ~override~  // Half-Spear of Talos (innate spell)
+  SAY NAME1 @10167
+  SAY NAME2 @10167
+  SAY UNIDENTIFIED_DESC @10168
+  SAY DESC @10168
+
+COPY ~Divine_Remix/cleric/cdtlsp0.itm~ ~override~  // Half-Spear +0
+  SAY NAME1 @10167
+  SAY NAME2 @10167
+  SAY UNIDENTIFIED_DESC @10168
+  SAY DESC @10168
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~cdtlsp0.itm~ ~override/cdtlsp1.itm~  // half-spear +1
+              ~cdtlsp0.itm~ ~override/cdtlsp2.itm~  // half-spear +2
+              ~cdtlsp0.itm~ ~override/cdtlsp3.itm~  // half-spear +3
+              ~cdtlsp0.itm~ ~override/cdtlsp4.itm~  // half-spear +4
+              ~cdtlsp0.itm~ ~override/cdtlsp5.itm~  // half-spear +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C "%weap_idx%"
+  PATCH_IF ("%weap_idx%" > 2) BEGIN
+    WRITE_SHORT 0x84 0
+  END ELSE BEGIN
+    WRITE_SHORT 0x84 (3 - "%weap_idx%")
+  END
+
+/////                                                  \\\\\
+///// misc                                             \\\\\
+/////                                                  \\\\\
+
+// added at Idobek's request for NPC Kit compatibility
+ACTION_IF FILE_EXISTS_IN_GAME ~ikitano1.spl~ THEN BEGIN
+
+  COPY_EXISTING ~ikitano1.spl~ ~override~
+    SAY 0x9e @10101
+
+END
+
+COMPILE ~Divine_Remix/cleric/temple.d~
+
+EXTEND_TOP ~ar0900.bcs~   ~Divine_Remix/cleric/ar0900.baf~
+EXTEND_TOP ~ar0901.bcs~   ~Divine_Remix/cleric/ar0901.baf~
+EXTEND_TOP ~ar0902.bcs~   ~Divine_Remix/cleric/ar0902.baf~
+EXTEND_TOP ~ar0904.bcs~   ~Divine_Remix/cleric/ar0904.baf~
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Silverstar of Sel?ne                             \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @10300 DESIGNATED 103 // component 103
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+
+ADD_KIT ~CDSelune~
+  ~CDSelune                0           0           1           1           0           1           0           0~
+  ~CDSelune 0 0 0 0 1 1 0 1 0 0 0 0 0 0 0 0 1 1 0 0 1 1 1 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~CDSelune                0       0       0       0       9       0~
+  ~CDSelune                0       0       0       0       0       0~
+  ~CDSelune                0       0       0       0       17      0~
+  ~CDSelune                0       0       0       0       15      0~
+  ~CDSelune                0       0       0       1       0       0       1       1       0~
+  ~CDSelune                1       0       1       1       0       1~
+  ~Divine_Remix/cleric/Selune/cdselune.2da~
+  ~K_C_D K_C_E K_C_G K_C_H K_C_HE K_C_HL K_C_HO~
+  ~0x00004000     3~
+  ~CD3~
+  ~CHAN09 * HELM07 BAG20 RING06 RING31 * BOOT01 AMUL19 BRAC16 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN4,2 POTN14,5 HAM07 SW1H27 STAF08~
+  SAY @10305
+  SAY @10301
+  SAY @10302
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_good.tph~ // removes inappropriate spells for good deities
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+COPY_EXISTING ~cdselune.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/an_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/as_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/nu_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/tr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/we_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cm_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pl_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wd_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~spell_remove_good~ // removes inappropriate spells for good deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~J#aoev22.txt~ THEN BEGIN // if Ashes of Embers is installed
+
+  COPY_EXISTING ~weapprof.2da~ ~override~
+    SET "column" = (22 + "%CDSelune%")
+    FOR (row = 2; row < 35 ; row = row + 1) BEGIN
+      SET_2DA_ENTRY_LATER ~aoe~ row column ~1~
+    END
+    SET_2DA_ENTRIES_NOW ~aoe~ 1
+    BUT_ONLY_IF_IT_CHANGES
+
+END
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // hla table and abilities if ToB is installed
+
+  INCLUDE ~Divine_Remix/lib/extra_regexp_vars.tph~
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_good.tph~ // removes inappropriate spells for good deities
+  COPY ~Divine_Remix/cleric/Selune/lucd3.2da~ ~override~ // HLA file
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/an_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/as_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/co_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/di_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/gu_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ne_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/nu_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/su_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/sn_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/tr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/we_hla.2da~
+    LAUNCH_PATCH_MACRO ~hla_remove_good~ // removes inappropriate spells for good deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY_EXISTING ~CDSelune.2da~ ~override~
+    SET_2DA_ENTRY 0 25 51 ~AP_CDHLYSYM~
+
+  EXTEND_TOP ~baldur.bcs~   ~Divine_Remix/cleric/selune/baldur.baf~
+  EXTEND_TOP ~baldur25.bcs~ ~Divine_Remix/cleric/selune/baldur.baf~
+
+  COPY ~Divine_Remix/cleric/selune/cdislhly.bam~ ~override~ // holy symbol
+  COPY ~Divine_Remix/cleric/selune/cdpslhly.bam~ ~override~
+  COPY ~Divine_Remix/cleric/selune/cdslhly.itm~ ~override~
+    SAY NAME1 @10319
+    SAY NAME2 @10319
+    SAY UNIDENTIFIED_DESC @10320
+    SAY DESC @10320
+
+  ACTION_IF NOT FILE_EXISTS_IN_GAME ~cdprtrk.spl~ THEN BEGIN
+
+    COPY_EXISTING ~spcl922.spl~ ~override/cdprtrk.spl~ // hla tracking
+      SAY UNIDENTIFIED_DESC @178
+
+  END
+
+END
+
+COPY ~Divine_Remix/cleric/Selune/cdslmce.spl~ ~override~  // moon's hand (innate)
+  SAY NAME1 @10303
+  SAY NAME2 @10303
+  SAY UNIDENTIFIED_DESC @10304
+  SAY DESC @10304
+
+COPY ~Divine_Remix/cleric/Selune/cdislune.bam~ ~override~
+COPY ~Divine_Remix/cleric/Selune/cdslmc0.itm~ ~override~  // Moon Mace +0
+  SAY NAME1 @10303
+  SAY NAME2 @10303
+  SAY UNIDENTIFIED_DESC @10304
+  SAY DESC @10304
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~cdslmc0.itm~ ~override/cdslmc1.itm~  // moon mace +1
+              ~cdslmc0.itm~ ~override/cdslmc2.itm~  // moon mace +2
+              ~cdslmc0.itm~ ~override/cdslmc3.itm~  // moon mace +3
+              ~cdslmc0.itm~ ~override/cdslmc4.itm~  // moon mace +4
+              ~cdslmc0.itm~ ~override/cdslmc5.itm~  // moon mace +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C ("%weap_idx%" + 1)
+  WRITE_SHORT 0x84 (8 - "%weap_idx%")
+
+COPY ~Divine_Remix/cleric/Selune/cdslinf.spl~ ~override~  // infravision (permanent innate spell)
+
+COPY ~Divine_Remix/cleric/Selune/cdslmsd.spl~ ~override~  // Moon Shield (innate spell)
+  SAY NAME1 @10307
+  SAY NAME2 @10307
+  SAY UNIDENTIFIED_DESC @10308
+  SAY DESC @10308
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~sppr403.spl~  ~override/cdslfre.spl~ // free action (innate)
+              ~spwi523.spl~  ~override/cdslsun.spl~ // sunfire (innate)
+              ~spwi621.spl~  ~override/cdslair.spl~ // conjure air elemental (innate)
+              ~spwi702.spl~  ~override/cdslpfe.spl~ // protection from the elements (innate)
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+  
+// makes pro-elements mage spell and selune innate mututally unstackable
+COPY_EXISTING ~spwi702.spl~ ~override~ // protection from the elements (mage)
+              ~cdslpfe.spl~ ~override~ // protection from the elements (innate)
+  PATCH_IF (SOURCE_SIZE > 0x71) THEN BEGIN // protects against invalid files
+    READ_LONG  0x64 "abil_off"
+    READ_SHORT 0x68 "abil_num"
+    READ_LONG  0x6a "fx_off"
+    SET "delta" = 0
+    FOR (loops = 0 ; loops < abil_num ; loops = loops + 1) BEGIN// ("%loops%" < "%abil_num%") BEGIN
+      READ_SHORT ("%abil_off%" + 0x1e + (0x28 * "%loops%")) "abil_fx_num"
+      READ_SHORT ("%abil_off%" + 0x20 + (0x28 * "%loops%")) "abil_fx_idx"
+      SET "abil_fx_idx" = ("%abil_fx_idx%" + "%delta%")
+      WRITE_SHORT ("%abil_off%" + 0x20 + (0x28 * "%loops%")) "%abil_fx_idx%"
+      FOR (loops2 = 0 ; loops2 < abil_fx_num ; loops2 = loops2 + 1) BEGIN
+        READ_SHORT   ("%fx_off%" +        (0x30 * ("%loops2%" + "%abil_fx_idx%"))) "opcode"
+        PATCH_IF ("%opcode%" = 28) BEGIN // cold resist
+          READ_BYTE  ("%fx_off%" + 0x02 + (0x30 * ("%loops2%" + "%abil_fx_idx%"))) "target"   // target
+          READ_BYTE  ("%fx_off%" + 0x03 + (0x30 * ("%loops2%" + "%abil_fx_idx%"))) "power"    // power
+          READ_BYTE  ("%fx_off%" + 0x0d + (0x30 * ("%loops2%" + "%abil_fx_idx%"))) "dispel"   // dispel/bypass
+          READ_LONG  ("%fx_off%" + 0x0e + (0x30 * ("%loops2%" + "%abil_fx_idx%"))) "duration" // duration
+          READ_SHORT ("%fx_off%" + 0x12 + (0x30 * ("%loops2%" + "%abil_fx_idx%"))) "prob"     // probability
+          SET "loops2" = "%abil_fx_num%"
+        END
+      END
+      SET "delta1" = 0
+      FOR (new_fx = 2 ; new_fx > 0 ; new_fx = new_fx - 1) BEGIN
+        SET "delta" = ("%delta%" + 1)
+        SET "delta1" = ("%delta1%" + 1)
+        PATCH_IF ("%new_fx%" = 2) BEGIN
+          SET "base" = ("%fx_off%" + (0x30 * ("%abil_fx_num%" + "%abil_fx_idx%")))
+          INSERT_BYTES  ("%base%") 0x30
+          WRITE_EVALUATED_ASCII  ("%base%" + 0x14) ~%SOURCE_RES%~ // last immunity is always self
+        END ELSE BEGIN
+          SET "base" = ("%fx_off%" + (0x30 * "%abil_fx_idx%"))
+          INSERT_BYTES  ("%base%") 0x30
+          PATCH_IF ("%new_fx%" = 1) BEGIN
+            PATCH_IF ("%SOURCE_RES%" STRING_COMPARE_CASE "CDSLPFE" = 0) BEGIN
+              WRITE_ASCII  ("%base%" + 0x14) ~spwi702~ // last immunity is always self
+            END ELSE BEGIN
+              WRITE_ASCII  ("%base%" + 0x14) ~CDSLPFE~ // last immunity is always self
+            END
+          END
+        END
+        WRITE_SHORT ("%base%"       ) 206 // spell immunity
+        WRITE_BYTE  ("%base%" + 0x02) "%target%"
+        WRITE_BYTE  ("%base%" + 0x03) "%power%"
+        SAY         ("%base%" + 0x04) @101 // ~You cannot cast...~
+        WRITE_BYTE  ("%base%" + 0x0d) "%dispel%"
+        WRITE_LONG  ("%base%" + 0x0e) "%duration%"
+        WRITE_SHORT ("%base%" + 0x12) "%prob%"
+      END
+      WRITE_SHORT ("%abil_off%" + 0x1e + (0x28 * "%loops%")) ("%abil_fx_num%" + "%delta1%")
+    END
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+/////                                                  \\\\\
+///// Stronghold fixes                                 \\\\\
+/////                                                  \\\\\
+
+EXTEND_TOP ~ar0900.bcs~   ~Divine_Remix/cleric/Selune/ar0900.baf~
+EXTEND_TOP ~ar0902.bcs~   ~Divine_Remix/cleric/Selune/ar0902.baf~
+COMPILE ~Divine_Remix/cleric/Selune/selune.d~
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Nightcloak of Shar                               \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @10600 DESIGNATED 106 // component 106
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+
+ADD_KIT ~A#SHAR~
+  ~A#SHAR                  0           0           1           1           0           1           0           0~
+  ~A#SHAR 0 0 0 0 1 1 0 1 0 0 0 0 0 0 0 0 1 1 0 0 1 1 1 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~A#SHAR	0	0	0	0	9	0~
+  ~A#SHAR		0	0	0	0	0	0~
+  ~A#SHAR		0	0	0	0	17	0~
+  ~A#SHAR		0	0	0	0	15	0~
+  ~A#SHAR		0	0	1	0	1	1	0	0	1~
+  ~A#SHAR		1	0	1	1	0	1~
+  ~Divine_Remix/cleric/Shar/a#shar.2DA~
+  ~K_C_H    K_C_D   K_C_G   K_C_E   K_C_HE   K_C_HL   K_C_HO~
+  ~0x00004000	3~
+  ~sha~
+  ~CHAN09 * HELM07 BAG20 RING06 RING21 * BOOT01 AMUL19 BRAC16 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 HAMM07 SW1H27 STAF08~
+  SAY @10603
+  SAY @10601
+  SAY @10602
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_evil.tph~ // removes inappropriate spells for evil deities
+COPY_EXISTING ~a#shar.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cm_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/th_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cr_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~spell_remove_evil~ // removes inappropriate spells for evil deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~j#aoev22.txt~ THEN BEGIN // if Ashes of Embers is installed
+
+  COPY_EXISTING ~weapprof.2da~ ~override~
+    SET "column" = (22 + "%A#SHAR%")
+    FOR (row = 2; row < 35 ; row = row + 1) BEGIN
+      SET_2DA_ENTRY_LATER ~aoe~ row column ~1~
+    END
+    SET_2DA_ENTRIES_NOW ~aoe~ 1
+    BUT_ONLY_IF_IT_CHANGES
+
+END
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~spwi401.spl~ ~override/a#sha07.spl~
+              ~spwi509.spl~ ~override/a#sha09.spl~
+              ~spwi601.spl~ ~override/a#sha11.spl~
+              ~spwi715.spl~ ~override/a#sha14.spl~
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // HLAs if ToB is installed
+  
+  INCLUDE ~Divine_Remix/lib/extra_regexp_vars.tph~
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_evil.tph~ // removes inappropriate spells for evil deities
+  COPY ~Divine_Remix/cleric/shar/lusha.2da~ ~override~
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cm_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/co_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/di_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/gu_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ne_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/pr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/th_hla.2da~
+    LAUNCH_PATCH_MACRO ~hla_remove_evil~ // removes inappropriate spells for good deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY_EXISTING ~a#shar.2da~ ~override~
+    SET_2DA_ENTRY 0 25 51 ~AP_CDHLYSYM~
+
+  EXTEND_TOP ~baldur.bcs~   ~Divine_Remix/cleric/Shar/baldur.baf~
+  EXTEND_TOP ~baldur25.bcs~ ~Divine_Remix/cleric/Shar/baldur.baf~
+
+  COPY ~Divine_Remix/cleric/Shar/a#sha25.itm~ ~override~  // holy symbol
+    SAY NAME1 @10615
+    SAY NAME2 @10615
+    SAY DESC  @10616
+
+  COPY ~Divine_Remix/cleric/Shar/a#sha71.spl~ ~override~  // Shar's Curse
+    SAY NAME1 @10604
+    SAY NAME2 @10604
+    SAY UNIDENTIFIED_DESC @10605
+
+  ACTION_IF NOT FILE_EXISTS_IN_GAME ~cdprrmg.spl~ THEN BEGIN
+
+    COPY_EXISTING ~spcl904.spl~ ~override/cdprrmg.spl~  // resist magic
+      SAY UNIDENTIFIED_DESC @177
+
+  END
+
+END
+
+COPY ~Divine_Remix/cleric/Shar/a#sha01.bam~ ~override~ // bams for Chakram
+     ~Divine_Remix/cleric/Shar/a#sha02.bam~ ~override~
+
+COPY ~Divine_Remix/cleric/Shar/a#sha0c.spl~ ~override~ // Prot. from Blindness.
+  SAY NAME1 @10617
+  SAY NAME2 @10617
+
+COPY ~Divine_Remix/cleric/Shar/a#sha0b.spl~ ~override~  // chakram (innate)
+  SAY NAME1 @10608
+  SAY NAME2 @10608
+  SAY UNIDENTIFIED_DESC @10608
+  SAY DESC @10608
+
+COPY ~Divine_Remix/cleric/Shar/a#sha00.itm~ ~override~  // Chakram +0
+  SAY NAME1 @10608
+  SAY NAME2 @10608
+  SAY DESC  @10609
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~a#sha00.itm~ ~override/a#sha01.itm~  // chakram +1
+              ~a#sha00.itm~ ~override/a#sha02.itm~  // chakram +2
+              ~a#sha00.itm~ ~override/a#sha03.itm~  // chakram +3
+              ~a#sha00.itm~ ~override/a#sha04.itm~  // chakram +4
+              ~a#sha00.itm~ ~override/a#sha05.itm~  // chakram +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C "%weap_idx%"
+  PATCH_IF ("%weap_idx%" > 2) BEGIN
+    WRITE_SHORT 0x84 0
+  END ELSE BEGIN
+    WRITE_SHORT 0x84 (3 - "%weap_idx%")
+  END
+
+/////                                                  \\\\\
+///// Stronghold fixes                                 \\\\\
+/////                                                  \\\\\
+
+EXTEND_TOP ~ar0900.bcs~   ~Divine_Remix/cleric/Shar/ar0900.baf~
+EXTEND_TOP ~ar0904.bcs~   ~Divine_Remix/cleric/Shar/ar0904.baf~
+COMPILE ~Divine_Remix/cleric/Shar/shar.d~
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Holy Strategist of the Red Knight                \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @10700 DESIGNATED 107 // component 107
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+
+ADD_KIT ~A#RED~
+  ~A#RED                   0           0           1           1           0           1           0           0~
+  ~A#RED  0 0 0 0 1 1 0 1 0 0 0 0 0 0 0 0 1 1 0 0 1 1 1 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~A#RED 	0	0	0	0	9	0~
+  ~A#RED 		0	0	0	0	0	0~
+  ~A#RED 		0	0	0	0	17	0~
+  ~A#RED 		0	0	0	0	15	0~
+  ~A#RED 		1	1	1	0	0	0	0	0	0~
+  ~A#RED 		1	0	1	1	0	1~
+  ~Divine_Remix/cleric/Red/a#red.2da~
+  ~K_C_H    K_C_D   K_C_G   K_C_E   K_C_HE   K_C_HL   K_C_HO~
+  ~0x00004000 3~
+  ~red~
+  ~CHAN09 * HELM07 BAG20 RING06 RING31 * BOOT01 AMUL19 BRAC16 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 HAMM07 SW1H27 STAF08~
+  SAY @10714
+  SAY @10701
+  SAY @10702
+
+ // add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_neutral.tph~ // removes inappropriate spells for neutral deities
+COPY_EXISTING ~a#red.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cm_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lw_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wa_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wd_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/th_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/tr_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~spell_remove_neutral~ // removes inappropriate spells for neutral deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+  
+ACTION_IF FILE_EXISTS_IN_GAME ~j#aoev22.txt~ THEN BEGIN // if Ashes of Embers is installed
+
+  COPY_EXISTING ~weapprof.2da~ ~override~
+    SET "column" = (22 + "%A#RED%")
+    FOR (row = 2; row < 35 ; row = row + 1) BEGIN
+      SET_2DA_ENTRY_LATER ~aoe~ row column ~1~
+    END
+    SET_2DA_ENTRIES_NOW ~aoe~ 1
+    BUT_ONLY_IF_IT_CHANGES
+
+END
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // hla table and abilities if ToB is installed
+
+  INCLUDE ~Divine_Remix/lib/extra_regexp_vars.tph~
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_neutral.tph~ // removes inappropriate spells for neutral deities
+  COPY ~Divine_Remix/cleric/red/lured.2da~ ~override~ // HLA file
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cm_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/di_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/gu_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/lw_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ne_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/pr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/th_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/tr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/wa_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/wd_hla.2da~
+    LAUNCH_PATCH_MACRO ~hla_remove_neutral~ // removes inappropriate spells for neutral deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY_EXISTING ~a#red.2da~ ~override~
+    SET_2DA_ENTRY 0 25 51 ~AP_CDHLYSYM~
+
+  EXTEND_TOP ~baldur.bcs~   ~Divine_Remix/cleric/red/baldur.baf~
+  EXTEND_TOP ~baldur25.bcs~ ~Divine_Remix/cleric/red/baldur.baf~
+
+  COPY ~Divine_Remix/cleric/red/cdirdhly.bam~ ~override~ // holy symbol
+  COPY ~Divine_Remix/cleric/red/cdprdhly.bam~ ~override~
+  COPY ~Divine_Remix/cleric/red/a#red25.itm~  ~override~
+    SAY NAME1 @10710
+    SAY NAME2 @10710
+    SAY DESC  @10711
+
+  ACTION_IF NOT FILE_EXISTS_IN_GAME ~cdprcry.spl~ THEN BEGIN
+
+    COPY_EXISTING ~spcl908.spl~ ~override/cdprcry.spl~ // hla war cry
+      SAY UNIDENTIFIED_DESC @191
+
+  END
+    ACTION_IF NOT FILE_EXISTS_IN_GAME ~cdprdbl.spl~ THEN BEGIN
+
+    COPY_EXISTING ~spcl902.spl~ ~override/cdprdbl.spl~ // hla death blow
+      SAY UNIDENTIFIED_DESC @207
+
+  END
+
+END
+
+COPY ~Divine_Remix/cleric/Red/a#re0b.spl~ ~override~  // Additional Attack per round (innate)
+COPY ~Divine_Remix/cleric/Red/a#re0c.spl~ ~override~  // Infravision (spell)
+COPY ~Divine_Remix/cleric/Red/a#re0d.spl~ ~override~  // Clairvoyance (spell)
+COPY ~Divine_Remix/cleric/Red/a#re0e.spl~ ~override~  // Wizard Eye (spell)
+
+COPY ~Divine_Remix/cleric/Red/a#redw0a.spl~ ~override~  // Checkmate (innate)
+  SAY NAME1 @10703
+  SAY NAME2 @10703
+
+COPY ~Divine_Remix/cleric/Red/a#redw.bam~ ~override~
+COPY ~Divine_Remix/cleric/Red/a#redw00.itm~ ~override~  // Checkmate +0
+  SAY NAME1 @10703
+  SAY NAME2 @10703
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~a#redw00.itm~ ~override/a#redw01.itm~  // Checkmate +1
+              ~a#redw00.itm~ ~override/a#redw02.itm~  // Checkmate +2
+              ~a#redw00.itm~ ~override/a#redw03.itm~  // Checkmate +3
+              ~a#redw00.itm~ ~override/a#redw04.itm~  // Checkmate +4
+              ~a#redw00.itm~ ~override/a#redw05.itm~  // Checkmate +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C "%weap_idx%"
+  WRITE_SHORT 0x84 (5 - "%weap_idx%")
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~spwi305.spl~ ~override/a#re07.spl~ // haste
+              ~sppr406.spl~ ~override/a#re09.spl~ // defensive harmony
+              ~sppr514.spl~ ~override/a#re11.spl~ // mass cure
+              ~spwi708.spl~ ~override/a#re14.spl~ // mantle
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+/////                                                  \\\\\
+///// Stronghold fixes                                 \\\\\
+/////                                                  \\\\\
+
+EXTEND_TOP ~ar0900.bcs~   ~Divine_Remix/cleric/red/ar0900.baf~
+EXTEND_TOP ~ar0901.bcs~   ~Divine_Remix/cleric/red/ar0901.baf~
+COMPILE ~Divine_Remix/cleric/red/red.d~
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Battleguard of Tempus                            \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @10900 DESIGNATED 109// component 109
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+
+ADD_KIT ~A#TEMP~
+  ~A#TEMP                  0           0           1           1           0           1           0           0~
+  ~A#TEMP 0 0 0 0 2 2 0 0 0 0 0 0 0 0 0 0 2 2 0 0 2 2 2 0 0 0 0 0 2 2 2 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~A#TEMP	        0       0       0       0       9       0~
+  ~A#TEMP		0	0	0	0	0	0~
+  ~A#TEMP		0	0	0	0	17	0~
+  ~A#TEMP		0	0	0	0	15	0~
+  ~A#TEMP		0	0	0	0	1	0	1	1	1~
+  ~A#TEMP		1	0	1	1	0	1~
+  ~Divine_Remix/cleric/tempus/a#temp.2da~
+  ~K_C_H    K_C_D   K_C_G   K_C_E   K_C_HE   K_C_HL   K_C_HO~
+  ~0x00004000	3~
+  ~tem~
+  ~CHAN09 * HELM07 BAG20 RING06 RING21 * BOOT01 AMUL19 BRAC16 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 HAMM07 SW1H27 STAF08~
+  SAY @10914
+  SAY @10901
+  SAY @10902
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_neutral.tph~ // removes inappropriate spells for neutral deities
+COPY_EXISTING ~a#temp.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/an_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cs_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wa_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/al_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wd_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/we_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~spell_remove_neutral~ // removes inappropriate spells for neutral deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~j#aoev22.txt~ THEN BEGIN // if Ashes of Embers is installed
+
+  COPY_EXISTING ~weapprof.2da~ ~override~
+    SET "column" = (22 + "%A#TEMP%")
+    FOR (row = 2; row < 25 ; row = row + 1) BEGIN
+      SET_2DA_ENTRY_LATER ~aoe~ row column ~2~
+    END
+    SET_2DA_ENTRY_LATER ~aoe~ 4 column ~0~
+    SET_2DA_ENTRY_LATER ~aoe~ 9 column ~0~
+    SET_2DA_ENTRIES_NOW ~aoe~ 1
+    BUT_ONLY_IF_IT_CHANGES
+
+END
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // hla table and abilities if ToB is installed
+
+  INCLUDE ~Divine_Remix/lib/extra_regexp_vars.tph~
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_neutral.tph~ // removes inappropriate spells for neutral deities
+  COPY ~Divine_Remix/cleric/tempus/lutem.2da~ ~override~ // HLA file
+    APPEND_FILE ~Divine_Remix/spheres/an_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/co_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cs_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/di_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ex_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ea_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ee_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ef_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ew_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ne_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/pr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/wa_hla.2da~
+    LAUNCH_PATCH_MACRO ~hla_remove_neutral~ // removes inappropriate spells for neutral deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY_EXISTING ~a#temp.2da~ ~override~
+    SET_2DA_ENTRY 0 25 51 ~AP_CDHLYSYM~
+
+  EXTEND_TOP ~baldur.bcs~   ~Divine_Remix/cleric/tempus/baldur.baf~
+  EXTEND_TOP ~baldur25.bcs~ ~Divine_Remix/cleric/tempus/baldur.baf~
+
+  COPY ~Divine_Remix/cleric/tempus/a#tem71.spl~ ~override~  // Tempus' Shield
+    SAY NAME1 @10912
+    SAY NAME2 @10912
+    SAY UNIDENTIFIED_DESC @10913
+
+  COPY ~Divine_Remix/cleric/tempus/cditmhly.bam~ ~override~ // holy symbol
+  COPY ~Divine_Remix/cleric/tempus/cdptmhly.bam~ ~override~
+  COPY ~Divine_Remix/cleric/tempus/a#tem25.itm~  ~override~
+    SAY NAME1 @10910
+    SAY NAME2 @10910
+    SAY UNIDENTIFIED_DESC @10911
+    SAY DESC @10911
+
+  ACTION_IF NOT FILE_EXISTS_IN_GAME ~cdprcry.spl~ THEN BEGIN
+
+    COPY_EXISTING ~spcl908.spl~ ~override/cdprcry.spl~ // hla war cry
+      SAY UNIDENTIFIED_DESC @191
+
+  END
+
+END
+
+COPY ~Divine_Remix/cleric/tempus/a#tem0b.spl~ ~override~  // Battle prowess (innate)
+  SAY NAME1 @10903
+  SAY NAME2 @10903
+  SAY UNIDENTIFIED_DESC @10904
+  SAY DESC @10904
+
+COPY ~Divine_Remix/cleric/tempus/cditmpus.bam~ ~override~
+COPY ~Divine_Remix/cleric/tempus/a#tem00.itm~  ~override~  // Battle Prowess +0
+  SAY NAME1 @10903
+  SAY NAME2 @10903
+  SAY UNIDENTIFIED_DESC @10904
+  SAY DESC @10904
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~a#tem00.itm~ ~override/a#tem01.itm~  // Battle Prowess +1
+              ~a#tem00.itm~ ~override/a#tem02.itm~  // Battle Prowess +2
+              ~a#tem00.itm~ ~override/a#tem03.itm~  // Battle Prowess +3
+              ~a#tem00.itm~ ~override/a#tem04.itm~  // Battle Prowess +4
+              ~a#tem00.itm~ ~override/a#tem05.itm~  // Battle Prowess +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C ("%weap_idx%" + 1)
+  WRITE_SHORT 0x84 (7 - "%weap_idx%")
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~sppr412.spl~ ~override/a#tem07.spl~ // holy power
+              ~spwi508.spl~ ~override/a#tem09.spl~ // chaos
+              ~spwi603.spl~ ~override/a#tem11.spl~ // tenser's transformation
+              ~spwi711.spl~ ~override/a#tem14.spl~ // sphere of chaos
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+/////                                                  \\\\\
+///// Stronghold fixes                                 \\\\\
+/////                                                  \\\\\
+
+EXTEND_TOP ~ar0900.bcs~   ~Divine_Remix/cleric/tempus/ar0900.baf~
+EXTEND_TOP ~ar0902.bcs~   ~Divine_Remix/cleric/tempus/ar0904.baf~
+COMPILE ~Divine_Remix/cleric/tempus/tempus.d~
+
+//long, boring spell replace done via macros
+INCLUDE ~Divine_Remix/lib/macro_spellbook_tempus.tph~ // defines patch macro
+INCLUDE ~Divine_Remix/lib/macro_spellbook_wrapup.tph~ // defines patch macro
+COPY_EXISTING ~kpchap01.cre~ ~override~
+  LAUNCH_PATCH_MACRO ~spellbook_tempus~ // change spellbook
+  LAUNCH_PATCH_MACRO ~spellbook_wrapup~ // final offset adjustments
+  BUT_ONLY_IF_IT_CHANGES
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Painbearer of Ilmater                            \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @11200 DESIGNATED 112 // component 112
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+
+ADD_KIT ~CDILMATR~
+  ~CDILMATR                  0           0           1           1           0           1           0           0~
+  ~CDILMATR 0 0 0 0 1 1 0 1 0 0 0 0 0 0 0 0 1 1 0 0 1 1 1 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~CDILMATR	0	0	0	0	9	0~
+  ~CDILMATR		0	0	0	0	0	0~
+  ~CDILMATR		0	0	0	0	17	0~
+  ~CDILMATR		0	0	0	0	15	0~
+  ~CDILMATR		1	1	0	1	0	0	0	0	0~
+  ~CDILMATR		1	0	1	1	0	1~
+  ~Divine_Remix/cleric/Ilmater/cdilmatr.2da~
+  ~K_C_H    K_C_D   K_C_G   K_C_E   K_C_HE   K_C_HL   K_C_HO~
+  ~0x00004000	3~
+  ~CD4~
+  ~CHAN09 * HELM07 BAG20 RING06 RING21 * BOOT01 AMUL19 BRAC16 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 HAMM07 SW1H27 STAF08~
+  SAY @11209
+  SAY @11201
+  SAY @11202
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_good.tph~ // removes inappropriate spells for good deities
+COPY_EXISTING ~cdilmatr.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cm_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lw_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/tr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wd_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/we_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~spell_remove_good~ // removes inappropriate spells for good deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~j#aoev22.txt~ THEN BEGIN // if Ashes of Embers is installed
+
+  COPY_EXISTING ~weapprof.2da~ ~override~
+    SET "column" = (22 + "%CDILMATR%")
+    FOR (row = 2; row < 35 ; row = row + 1) BEGIN
+      SET_2DA_ENTRY_LATER ~aoe~ row column ~1~
+    END
+    SET_2DA_ENTRIES_NOW ~aoe~ 1
+    BUT_ONLY_IF_IT_CHANGES
+
+END
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // hla table and abilities if ToB is installed  
+
+  INCLUDE ~Divine_Remix/lib/extra_regexp_vars.tph~
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_good.tph~ // removes inappropriate spells for good deities
+  COPY ~Divine_Remix/cleric/ilmater/lucd4.2da~ ~override~ // HLA file
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cm_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/gu_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/lw_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ne_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/pr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/tr_hla.2da~
+    LAUNCH_PATCH_MACRO ~hla_remove_good~ // removes inappropriate spells for good deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+
+  COPY_EXISTING ~cdilmatr.2da~ ~override~
+    SET_2DA_ENTRY 0 25 51 ~AP_CDHLYSYM~
+
+  EXTEND_TOP ~baldur.bcs~   ~Divine_Remix/cleric/ilmater/baldur.baf~
+  EXTEND_TOP ~baldur25.bcs~ ~Divine_Remix/cleric/ilmater/baldur.baf~
+
+  COPY ~Divine_Remix/cleric/ilmater/cdiilhly.bam~ ~override~ // holy symbol
+  COPY ~Divine_Remix/cleric/ilmater/cdpilhly.bam~ ~override~
+  COPY ~Divine_Remix/cleric/ilmater/cdilhly.itm~  ~override~
+    SAY NAME1 @11207
+    SAY NAME2 @11207
+    SAY UNIDENTIFIED_DESC @11208
+    SAY DESC @11208
+
+END
+
+COPY ~Divine_Remix/cleric/ilmater/cdilhnd.spl~ ~override~  // Hand of Ilmater (innate)
+  SAY NAME1 @11203
+  SAY NAME2 @11203
+  SAY UNIDENTIFIED_DESC @11204
+  SAY DESC @11204
+
+COPY ~Divine_Remix/cleric/ilmater/cdiilmtr.bam~ ~override~
+COPY ~Divine_Remix/cleric/ilmater/cdilfs0.itm~ ~override~  // Hand of Ilmater +0
+  SAY NAME1 @11203
+  SAY NAME2 @11203
+  SAY UNIDENTIFIED_DESC @11204
+  SAY DESC @11204
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~cdilfs0.itm~ ~override/cdilfs1.itm~  // hand of ilmater +1
+              ~cdilfs0.itm~ ~override/cdilfs2.itm~  // hand of ilmater +2
+              ~cdilfs0.itm~ ~override/cdilfs3.itm~  // hand of ilmater +3
+              ~cdilfs0.itm~ ~override/cdilfs4.itm~  // hand of ilmater +4
+              ~cdilfs0.itm~ ~override/cdilfs5.itm~  // hand of ilmater +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C "%weap_idx%"
+  PATCH_IF ("%weap_idx%" > 3) BEGIN
+    WRITE_SHORT 0x84 0
+  END ELSE BEGIN
+    WRITE_SHORT 0x84 (4 - "%weap_idx%")
+  END
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~sppr404.spl~ ~override/cdilnps.spl~ // neutralize poison
+              ~sppr607.spl~ ~override/cdilhel.spl~ // heal
+              ~sppr711.spl~ ~override/cdilrgn.spl~ // regeneration
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY ~Divine_Remix/cleric/ilmater/cdilenda.bam~ ~override~ // Ilmater's Endurance (innate)
+     ~Divine_Remix/cleric/ilmater/cdilendb.bam~ ~override~
+     ~Divine_Remix/cleric/ilmater/cdilendc.bam~ ~override~
+COPY ~Divine_Remix/cleric/ilmater/cdilend.spl~  ~override~
+  SAY NAME1 @11205
+  SAY NAME2 @11205
+  SAY UNIDENTIFIED_DESC @11206
+  SAY DESC @11206
+
+/////                                                  \\\\\
+///// Stronghold fixes                                 \\\\\
+/////                                                  \\\\\
+
+EXTEND_TOP ~ar0900.bcs~   ~Divine_Remix/cleric/ilmater/ar0900.baf~
+EXTEND_TOP ~ar0901.bcs~   ~Divine_Remix/cleric/ilmater/ar0901.baf~
+EXTEND_TOP ~ar0902.bcs~   ~Divine_Remix/cleric/ilmater/ar0902.baf~
+COMPILE ~Divine_Remix/cleric/ilmater/ilmater.d~
+
+//long, boring spell replace done via macros
+INCLUDE ~Divine_Remix/lib/macro_spellbook_ilmater.tph~ // defines patch macro
+INCLUDE ~Divine_Remix/lib/macro_spellbook_wrapup.tph~ // defines patch macro
+COPY_EXISTING ~slilmat.cre~ ~override~ // priest of ilmater
+              ~wilmat.cre~  ~override~ // priestess of ilmatar
+  LAUNCH_PATCH_MACRO ~spellbook_ilmater~ // change spellbook
+  LAUNCH_PATCH_MACRO ~spellbook_wrapup~  // final offset adjustments
+  BUT_ONLY_IF_IT_CHANGES
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Firewalker of Kossuth kit                        \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @11500 DESIGNATED 115
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+
+COPY ~Divine_Remix/cleric/Kossuth/a#kos0a.spl~ ~override~  // Tendril of Flame (innate)
+  SAY NAME1 @11501
+  SAY NAME2 @11501
+
+COPY ~Divine_Remix/cleric/Kossuth/cdikoss.bam~ ~override~
+COPY ~Divine_Remix/cleric/Kossuth/a#koss00.itm~ ~override~  // Tendril of Flame
+  SAY NAME1 @11502
+  SAY NAME2 @11502
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~a#koss00.itm~ ~override/a#koss01.itm~ // tendril of flame +1
+              ~a#koss00.itm~ ~override/a#koss02.itm~ // tendril of flame +2
+              ~a#koss00.itm~ ~override/a#koss03.itm~ // tendril of flame +3
+              ~a#koss00.itm~ ~override/a#koss04.itm~ // tendril of flame +4
+              ~a#koss00.itm~ ~override/a#koss05.itm~ // tendril of flame +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C ("%weap_idx%" + 1)
+  WRITE_SHORT 0x84 (7 - "%weap_idx%")
+
+COPY ~Divine_Remix/cleric/Kossuth/a#kos0c.spl~ ~override~
+
+//START OF KIT ADDITION
+
+ADD_KIT ~A#KOSS~
+  ~A#KOSS                  0           0           1           1           0           1           0           0~
+  ~A#KOSS   0 0 0 0 1 1 0 1 0 0 0 0 0 0 0 0 1 1 0 0 1 1 1 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~A#KOSS	0	0	0	0	9	0~
+  ~A#KOSS		0	0	0	0	0	0~
+  ~A#KOSS		0	0	0	0	17	0~
+  ~A#KOSS		0	0	0	0	15	0~
+  ~A#KOSS		1	1	1	1	1	1	1	1	1~
+  ~A#KOSS		1	0	1	1	0	1~
+  ~Divine_Remix/cleric/Kossuth/a#koss.2da~
+  ~K_C_H    K_C_D   K_C_G   K_C_E   K_C_HE   K_C_HL   K_C_HO~
+  ~0x00004000	3~
+  ~kos~
+  ~CHAN09 * HELM07 BAG20 RING06 RING21 * BOOT01 AMUL19 BRAC16 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 HAMM07 SW1H27 STAF08~
+  SAY @11509
+  SAY @11503
+  SAY @11504
+  
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+COPY_EXISTING ~a#koss.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wa_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~j#aoev22.txt~ THEN BEGIN // if Ashes of Embers is installed
+
+  COPY_EXISTING ~weapprof.2da~ ~override~
+    SET "column" = (22 + "%A#KOSS%")
+    FOR (row = 2; row < 35 ; row = row + 1) BEGIN
+      SET_2DA_ENTRY_LATER ~aoe~ row column ~1~
+    END
+    SET_2DA_ENTRIES_NOW ~aoe~ 1
+    BUT_ONLY_IF_IT_CHANGES
+
+END
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~spwi418.spl~ ~override/a#kos07.spl~ // fire shield (red)
+              ~spwi523.spl~ ~override/a#kos09.spl~ // sunfire
+              ~sppr605.spl~ ~override/a#kos11.spl~ // conjure fire elemental
+              ~spwi712.spl~ ~override/a#kos14.spl~ // delayed blast fireball
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // hla table and abilities if ToB is installed
+
+  INCLUDE ~Divine_Remix/lib/extra_regexp_vars.tph~
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~
+  COPY ~Divine_Remix/cleric/Kossuth/lukos.2da~ ~override~
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/co_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ef_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/su_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/sn_hla.2da~
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY ~Divine_Remix/cleric/Kossuth/a#koss20.spl~ ~override~ //Kossuth's Purifying Touch
+    SAY NAME1 @11505
+    SAY NAME2 @11505
+    SAY UNIDENTIFIED_DESC @11506
+    SAY DESC @11506
+
+  COPY_EXISTING ~a#koss.2da~ ~override~
+    SET_2DA_ENTRY 1 25 51 ~AP_CDHLYSYM~
+
+  ACTION_IF NOT FILE_EXISTS_IN_GAME ~cdprcry.spl~ THEN BEGIN
+
+    COPY_EXISTING ~spcl908.spl~ ~override/cdprcry.spl~ // hla war cry
+      SAY UNIDENTIFIED_DESC @191
+
+  END
+
+  EXTEND_TOP ~baldur.bcs~   ~Divine_Remix/cleric/Kossuth/baldur.baf~
+  EXTEND_TOP ~baldur25.bcs~ ~Divine_Remix/cleric/Kossuth/baldur.baf~
+
+  COPY ~Divine_Remix/cleric/kossuth/a#ikos25.bam~ ~override~ // holy symbol
+  COPY ~Divine_Remix/cleric/kossuth/a#pkos25.bam~ ~override~
+  COPY ~Divine_Remix/cleric/kossuth/a#koss25.itm~ ~override~
+    SAY NAME1 @11507
+    SAY NAME2 @11507
+    SAY UNIDENTIFIED_DESC @11508
+    SAY DESC @11508
+
+END
+
+/////                                                  \\\\\
+///// Stronghold fixes                                 \\\\\
+/////                                                  \\\\\
+
+EXTEND_TOP ~ar0900.bcs~   ~Divine_Remix/cleric/kossuth/ar0900.baf~
+EXTEND_TOP ~ar0901.bcs~   ~Divine_Remix/cleric/kossuth/ar0901.baf~
+EXTEND_TOP ~ar0902.bcs~   ~Divine_Remix/cleric/kossuth/ar0902.baf~
+EXTEND_TOP ~ar0904.bcs~   ~Divine_Remix/cleric/kossuth/ar0904.baf~
+COMPILE ~Divine_Remix/cleric/kossuth/kossuth.d~
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Authlim of Iyachtu Xvim                          \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @11800 DESIGNATED 118
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+
+ADD_KIT ~CDXvim~
+  ~CDXvim                  0           0           1           1           0           1           0           0~
+  ~CDXvim   0 0 0 0 1 1 0 1 0 0 0 0 0 0 0 0 1 1 0 0 1 1 1 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~CDXvim                  0       0       0       0       9       0~
+  ~CDXvim                  0       0       0       0       0       0~
+  ~CDXvim                  0       0       0       0       17      0~
+  ~CDXvim                  0       0       0       0       15      0~
+  ~CDXvim                  0       1       1       0       0       1       0       0       0~
+  ~CDXvim                  1       0       1       1       0       1~
+  ~Divine_Remix/cleric/Xvim/cdxvim.2da~
+  ~K_C_D K_C_E K_C_G K_C_H K_C_HE K_C_HL K_C_HO~
+  ~0x00004000     3~
+  ~CD5~
+  ~CHAN09 * HELM07 BAG20 RING06 RING31 * BOOT01 AMUL19 BRAC16 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN4,2 POTN14,5 HAM07 SW1H27 STAF08~
+  SAY @11809
+  SAY @11801
+  SAY @11802
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_evil.tph~ // removes inappropriate spells for evil deities
+COPY_EXISTING ~cdxvim.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wa_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cm_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cr_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lw_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  REPLACE_TEXTUALLY ~SPPR103~ ~CDXVHEL1~ // Xvim's custom healing spells
+  REPLACE_TEXTUALLY ~SPPR315~ ~CDXVHEL3~
+  REPLACE_TEXTUALLY ~SPPR401~ ~CDXVHEL4~
+  REPLACE_TEXTUALLY ~SPPR502~ ~CDXVHEL5~
+  REPLACE_TEXTUALLY ~SPPR607~ ~CDXVHEL6~
+  LAUNCH_PATCH_MACRO ~spell_remove_evil~ // removes inappropriate spells for evil deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~j#aoev22.txt~ THEN BEGIN // if Ashes of Embers is installed
+
+  COPY_EXISTING ~weapprof.2da~ ~override~
+    SET "column" = (22 + "%CDXvim%")
+    FOR (row = 2; row < 35 ; row = row + 1) BEGIN
+      SET_2DA_ENTRY_LATER ~aoe~ row column ~1~
+    END
+    SET_2DA_ENTRIES_NOW ~aoe~ 1
+    BUT_ONLY_IF_IT_CHANGES
+
+END
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // hla table and abilities if ToB is installed
+
+  INCLUDE ~Divine_Remix/lib/extra_regexp_vars.tph~
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_evil.tph~ // removes inappropriate spells for good deities
+  COPY ~Divine_Remix/cleric/Xvim/lucd5.2da~ ~override~ // HLA file
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/co_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/di_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/gu_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ne_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/su_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/wa_hla.2da~
+    LAUNCH_PATCH_MACRO ~hla_remove_evil~ // removes inappropriate spells for good deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY_EXISTING ~cdxvim.2da~ ~override~
+    SET_2DA_ENTRY 0 25 51 ~AP_CDHLYSYM~
+
+  EXTEND_TOP ~baldur.bcs~   ~Divine_Remix/cleric/Xvim/baldur.baf~
+  EXTEND_TOP ~baldur25.bcs~ ~Divine_Remix/cleric/Xvim/baldur.baf~
+
+  COPY_EXISTING ~beheld01.cre~ ~override/cdxveorb.cre~ // creates allied Elder Orbs for summoning
+    WRITE_ASCII 0x248 ~gensht01~ #8
+    WRITE_ASCII 0x250 ~cdxveorb~ #8
+    WRITE_ASCII 0x258 ~~ #8
+    WRITE_ASCII 0x260 ~~ #8
+    WRITE_ASCII 0x268 ~wtasight~ #8
+
+  COMPILE ~Divine_Remix/cleric/Xvim/cdxveorb.baf~
+
+  COPY ~Divine_Remix/cleric/xvim/cdxvhla.eff~ ~override~ // Xvim's Summoning
+  COPY ~Divine_Remix/cleric/xvim/cdxvhla.spl~ ~override~
+    SAY NAME1 @11807
+    SAY NAME2 @11807
+    SAY UNIDENTIFIED_DESC @11808
+    SAY DESC @11808
+
+  COPY ~Divine_Remix/cleric/Xvim/cdixvhly.bam~ ~override~ // holy symbol
+       ~Divine_Remix/cleric/Xvim/cdpxvhly.bam~ ~override~
+  COPY ~Divine_Remix/cleric/Xvim/cdxvhly.itm~  ~override~
+    SAY NAME1 @11803
+    SAY NAME2 @11803
+    SAY UNIDENTIFIED_DESC @11804
+    SAY DESC @11804
+
+  ACTION_IF NOT FILE_EXISTS_IN_GAME ~cdprdbl.spl~ THEN BEGIN
+
+    COPY_EXISTING ~spcl902.spl~ ~override/cdprdbl.spl~ // hla death blow
+      SAY UNIDENTIFIED_DESC @207
+
+  END
+
+END
+
+COPY ~Divine_Remix/cleric/Xvim/cdxvscm.spl~ ~override~  // Scimitar of Souls (innate)
+  SAY NAME1 @11805
+  SAY NAME2 @11805
+  SAY UNIDENTIFIED_DESC @11806
+  SAY DESC @11806
+
+COPY ~Divine_Remix/cleric/Xvim/cdixvim.bam~ ~override~
+COPY ~Divine_Remix/cleric/Xvim/cdxvsc0.itm~ ~override~  // Scimitar of Souls +0
+  SAY NAME1 @11805
+  SAY NAME2 @11805
+  SAY UNIDENTIFIED_DESC @11806
+  SAY DESC @11806
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~cdxvsc0.itm~ ~override/cdxvsc1.itm~  // scimitar of souls +1
+              ~cdxvsc0.itm~ ~override/cdxvsc2.itm~  // scimitar of souls +2
+              ~cdxvsc0.itm~ ~override/cdxvsc3.itm~  // scimitar of souls +3
+              ~cdxvsc0.itm~ ~override/cdxvsc4.itm~  // scimitar of souls +4
+              ~cdxvsc0.itm~ ~override/cdxvsc5.itm~  // scimitar of souls +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C "%weap_idx%"
+  WRITE_SHORT 0x84 (5 - "%weap_idx%")
+
+COPY ~Divine_Remix/cleric/Xvim/CDXVFEAR.spl~ ~override~  // immunity to fear (permanent innate spell)
+
+// creates special 'caster-only' heal spells for xvim
+COPY_EXISTING ~sppr103.spl~ ~override/cdxvhel1.spl~
+              ~sppr315.spl~ ~override/cdxvhel3.spl~
+              ~sppr401.spl~ ~override/cdxvhel4.spl~
+              ~sppr502.spl~ ~override/cdxvhel5.spl~
+              ~sppr607.spl~ ~override/cdxvhel6.spl~
+  READ_LONG  0x64 "abil_off" ELSE 0
+  READ_SHORT 0x68 "abil_num" ELSE 0
+  READ_LONG  0x6a "fx_off"   ELSE 0
+  READ_SHORT 0x70 "fx_num"   ELSE 0
+  FOR (index = 0 ; index < abil_num ; index = index + 1) BEGIN // ability
+    WRITE_SHORT ("%abil_off%" + 0x0c + (0x28 * "%index%")) 5 // target: caster
+    READ_SHORT  ("%abil_off%" + 0x1e + (0x28 * "%index%")) "abil_fx_num"
+    READ_SHORT  ("%abil_off%" + 0x20 + (0x28 * "%index%")) "abil_fx_idx"
+    FOR (index2 = 0 ; index2 < abil_fx_num ; index2 = index2 + 1) BEGIN // ability effects
+      WRITE_SHORT ("%fx_off%" + 0x02 + (0x30 * ("%abil_fx_idx%" + "%index2%"))) 1 // target: caster
+    END
+  END
+  FOR (index3 = 0 ; index3 < fx_num ; index3 = index3 + 1) BEGIN // global effects
+    WRITE_SHORT ("%fx_off%" + 0x02 + (0x30 * "%index3%")) 1 // target: caster
+  END
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~spwi412.spl~ ~override/cdxvgml.spl~ // greater malison (innate)
+              ~spwi514.spl~ ~override/cdxvlrs.spl~ // lower resistance (innate)
+              ~spwi605.spl~ ~override/cdxvdth.spl~ // death spell (innate)
+              ~spwi708.spl~ ~override/cdxvmtl.spl~ // mantle (innate)
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+// makes greater malison mage spell and xvim innate mututally unstackable
+COPY_EXISTING ~spwi412.spl~ ~override~ // greater malison (mage)
+              ~cdxvgml.spl~ ~override~ // greater malison (innate)
+  PATCH_IF (SOURCE_SIZE > 0x71) THEN BEGIN // protects against invalid files
+    READ_LONG  0x64 "abil_off"
+    READ_SHORT 0x68 "abil_num"
+    READ_LONG  0x6a "fx_off"
+    SET "delta" = 0
+    FOR (loops = 0 ; loops < abil_num ; loops = loops + 1) BEGIN// ("%loops%" < "%abil_num%") BEGIN
+      READ_SHORT ("%abil_off%" + 0x1e + (0x28 * "%loops%")) "abil_fx_num"
+      READ_SHORT ("%abil_off%" + 0x20 + (0x28 * "%loops%")) "abil_fx_idx"
+      SET "abil_fx_idx" = ("%abil_fx_idx%" + "%delta%")
+      WRITE_SHORT ("%abil_off%" + 0x20 + (0x28 * "%loops%")) "%abil_fx_idx%"
+      FOR (loops2 = 0 ; loops2 < abil_fx_num ; loops2 = loops2 + 1) BEGIN
+        READ_SHORT   ("%fx_off%" +        (0x30 * ("%loops2%" + "%abil_fx_idx%"))) "opcode"
+        PATCH_IF ("%opcode%" = 142) BEGIN // display portrait icon
+          READ_BYTE  ("%fx_off%" + 0x02 + (0x30 * ("%loops2%" + "%abil_fx_idx%"))) "target"   // target
+          READ_BYTE  ("%fx_off%" + 0x03 + (0x30 * ("%loops2%" + "%abil_fx_idx%"))) "power"    // power
+          READ_BYTE  ("%fx_off%" + 0x0d + (0x30 * ("%loops2%" + "%abil_fx_idx%"))) "dispel"   // dispel/bypass
+          READ_LONG  ("%fx_off%" + 0x0e + (0x30 * ("%loops2%" + "%abil_fx_idx%"))) "duration" // duration
+          READ_SHORT ("%fx_off%" + 0x12 + (0x30 * ("%loops2%" + "%abil_fx_idx%"))) "prob"     // probability
+          SET "loops2" = "%abil_fx_num%"
+        END
+      END
+      SET "delta1" = 0
+      FOR (new_fx = 2 ; new_fx > 0 ; new_fx = new_fx - 1) BEGIN
+        SET "delta" = ("%delta%" + 1)
+        SET "delta1" = ("%delta1%" + 1)
+        PATCH_IF ("%new_fx%" = 2) BEGIN
+          SET "base" = ("%fx_off%" + (0x30 * ("%abil_fx_num%" + "%abil_fx_idx%")))
+          INSERT_BYTES  ("%base%") 0x30
+          WRITE_EVALUATED_ASCII  ("%base%" + 0x14) ~%SOURCE_RES%~ // last immunity is always self
+        END ELSE BEGIN
+          SET "base" = ("%fx_off%" + (0x30 * "%abil_fx_idx%"))
+          INSERT_BYTES  ("%base%") 0x30
+          PATCH_IF ("%new_fx%" = 1) BEGIN
+            PATCH_IF ("%SOURCE_RES%" STRING_COMPARE_CASE "CDXVGML" = 0) BEGIN
+              WRITE_ASCII  ("%base%" + 0x14) ~spwi412~ // last immunity is always self
+            END ELSE BEGIN
+              WRITE_ASCII  ("%base%" + 0x14) ~CDXVGML~ // last immunity is always self
+            END
+          END
+        END
+        WRITE_SHORT ("%base%"       ) 206 // spell immunity
+        WRITE_BYTE  ("%base%" + 0x02) "%target%"
+        WRITE_BYTE  ("%base%" + 0x03) "%power%"
+        SAY         ("%base%" + 0x04) @101 // ~You cannot cast...~
+        WRITE_BYTE  ("%base%" + 0x0d) "%dispel%"
+        WRITE_LONG  ("%base%" + 0x0e) "%duration%"
+        WRITE_SHORT ("%base%" + 0x12) "%prob%"
+      END
+      WRITE_SHORT ("%abil_off%" + 0x1e + (0x28 * "%loops%")) ("%abil_fx_num%" + "%delta1%")
+    END
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+/////                                                  \\\\\
+///// Stronghold fixes                                 \\\\\
+/////                                                  \\\\\
+
+EXTEND_TOP ~ar0900.bcs~   ~Divine_Remix/cleric/Xvim/ar0900.baf~
+EXTEND_TOP ~ar0901.bcs~   ~Divine_Remix/cleric/Xvim/ar0901.baf~
+COMPILE ~Divine_Remix/cleric/Xvim/xvim.d~
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Lorekeeper of Oghma kit                          \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @12100 DESIGNATED 121
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+
+ADD_KIT ~A#OGMA~
+  ~A#OGMA                  0           0           1           1           0           1           0           0~
+  ~A#OGMA 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 1 1 0 0 1 1 1 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~A#OGMA	0	0	0	0	9	0~
+  ~A#OGMA		0	0	0	0	0	0~
+  ~A#OGMA		0	0	0	0	17	0~
+  ~A#OGMA		0	0	0	0	15	0~
+  ~A#OGMA		1	1	1	1	1	1	1	1	1~
+  ~A#OGMA		1	0	1	1	0	1~
+  ~Divine_Remix/cleric/Oghma/a#ogma.2da~
+  ~K_C_H    K_C_D   K_C_G   K_C_E   K_C_HE   K_C_HL   K_C_HO~
+  ~0x00004000 3~
+  ~ogh~
+  ~CHAN09 * HELM07 BAG20 RING06 RING21 * BOOT01 AMUL19 BRAC16 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 HAMM07 SW1H27 STAF08~
+  SAY @12107
+  SAY @12101
+  SAY @12102
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+COPY_EXISTING ~a#ogma.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/as_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cm_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/th_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/tr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/an_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cr_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wd_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~j#aoev22.txt~ THEN BEGIN // if Ashes of Embers is installed
+
+  COPY_EXISTING ~weapprof.2da~ ~override~
+    SET "column" = (22 + "%A#OGMA%")
+    FOR (row = 2; row < 35 ; row = row + 1) BEGIN
+      SET_2DA_ENTRY_LATER ~aoe~ row column ~1~
+    END
+    SET_2DA_ENTRIES_NOW ~aoe~ 1
+    BUT_ONLY_IF_IT_CHANGES
+
+END
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~spwi419.spl~ ~override/a#og07.spl~ // secret word
+              ~spwi515.spl~ ~override/a#og09.spl~ // oracle
+              ~spwi612.spl~ ~override/a#og11.spl~ // power word silence
+              ~spwi704.spl~ ~override/a#og14.spl~ // ruby ray of reversal
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY ~Divine_Remix/cleric/Oghma/a#og0b.spl~ ~override~  // Lore boost (innate)
+
+COPY ~Divine_Remix/cleric/Oghma/a#og0a.spl~ ~override~  // Mortal Strike (innate)
+  SAY NAME1 @12103
+  SAY NAME2 @12103
+
+COPY ~Divine_Remix/cleric/Oghma/cdiogma.bam~ ~override~
+COPY ~Divine_Remix/cleric/Oghma/a#og00.itm~ ~override~  // Mortal Strike +0
+  SAY NAME1 @12103
+  SAY NAME2 @12103
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~a#og00.itm~ ~override/a#og01.itm~  // mortal strike +1
+              ~a#og00.itm~ ~override/a#og02.itm~  // mortal strike +2
+              ~a#og00.itm~ ~override/a#og03.itm~  // mortal strike +3
+              ~a#og00.itm~ ~override/a#og04.itm~  // mortal strike +4
+              ~a#og00.itm~ ~override/a#og05.itm~  // mortal strike +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C "%weap_idx%"
+  WRITE_SHORT 0x84 (5 - "%weap_idx%")
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // hla table and abilities if ToB is installed
+
+  INCLUDE ~Divine_Remix/lib/extra_regexp_vars.tph~
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~
+  COPY ~Divine_Remix/cleric/Oghma/luogh.2da~ ~override~
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/as_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/co_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cm_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/di_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ex_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ea_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ee_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ef_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ew_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/gu_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/pr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/su_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/th_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/tr_hla.2da~
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  COPY_EXISTING ~a#ogma.2da~ ~override~
+    SET_2DA_ENTRY 1 25 51 ~AP_CDHLYSYM~
+
+  EXTEND_TOP ~baldur.bcs~   ~Divine_Remix/cleric/Oghma/baldur.baf~
+  EXTEND_TOP ~baldur25.bcs~ ~Divine_Remix/cleric/Oghma/baldur.baf~
+
+  COPY ~Divine_Remix/cleric/Oghma/cdioghly.bam~   ~override~ // holy symbol
+       ~Divine_Remix/cleric/Oghma/cdpoghly.bam~   ~override~
+  COPY ~Divine_Remix/cleric/kossuth/a#koss25.itm~ ~override/a#og25.itm~// This is ok because they have the same alignment restrictions... Yeh.
+    SAY NAME1 @12105
+    SAY NAME2 @12105
+    SAY UNIDENTIFIED_DESC @12106
+    SAY DESC @12106
+    WRITE_ASCII 0x3a ~cdioghly~
+    WRITE_ASCII 0x58 ~cdpoghly~
+
+  ACTION_IF NOT FILE_EXISTS_IN_GAME ~cdprrmg.spl~ THEN BEGIN
+
+    COPY_EXISTING ~spcl904.spl~ ~override/cdprrmg.spl~  // resist magic
+      SAY UNIDENTIFIED_DESC @177
+
+  END
+
+END
+
+/////                                                  \\\\\
+///// Stronghold fixes                                 \\\\\
+/////                                                  \\\\\
+
+EXTEND_TOP ~ar0900.bcs~   ~Divine_Remix/cleric/oghma/ar0900.baf~
+EXTEND_TOP ~ar0901.bcs~   ~Divine_Remix/cleric/oghma/ar0901.baf~
+EXTEND_TOP ~ar0902.bcs~   ~Divine_Remix/cleric/oghma/ar0902.baf~
+EXTEND_TOP ~ar0904.bcs~   ~Divine_Remix/cleric/oghma/ar0904.baf~
+COMPILE ~Divine_Remix/cleric/oghma/oghma.d~
+
+//long, boring spell replace done via macros
+INCLUDE ~Divine_Remix/lib/macro_spellbook_oghma.tph~  // defines patch macro
+INCLUDE ~Divine_Remix/lib/macro_spellbook_wrapup.tph~ // defines patch macro
+COPY_EXISTING ~doghma.cre~ ~override~ // priest of oghma
+  LAUNCH_PATCH_MACRO ~spellbook_oghma~  // change spellbook
+  LAUNCH_PATCH_MACRO ~spellbook_wrapup~ // final offset adjustments
+  BUT_ONLY_IF_IT_CHANGES
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Heartwarder of Sune kit                          \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @12400 DESIGNATED 124
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+
+ADD_KIT ~NMSUNE~
+  ~NMSUNE                0           0           1           1           0           1           0           0~
+  ~NMSUNE 0 0 0 0 1 1 0 1 0 0 0 0 0 0 0 0 1 1 0 0 1 1 1 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~NMSUNE                0       0       0       0       9       0~
+  ~NMSUNE                0       0       0       0       0       1~
+  ~NMSUNE                0       0       0       0       17      0~
+  ~NMSUNE                0       0       0       0       15      0~
+  ~NMSUNE                0       0       0       1       0       0       1       1       0~
+  ~NMSUNE                1       0       1       1       0       1~
+  ~Divine_Remix/cleric/Sune/nmsune.2da~
+  ~K_C_D K_C_E K_C_G K_C_H K_C_HE K_C_HL K_C_HO~
+  ~0x00004000	3~
+  ~sun~
+  ~CHAN09 * HELM07 BAG20 RING06 RING21 * BOOT01 AMUL19 BRAC16 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 HAMM07 SW1H27 STAF08~
+  SAY @12407
+  SAY @12401
+  SAY @12402
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_good.tph~ // removes inappropriate spells for good deities
+COPY_EXISTING ~nmsune.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/as_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cm_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/th_major.2da~
+//  APPEND_FILE ~Divine_Remix/spheres/ti_major.2da~ There are current no Time sphere spells
+  APPEND_FILE ~Divine_Remix/spheres/co_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~spell_remove_good~ // removes inappropriate spells for good deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~j#aoev22.txt~ THEN BEGIN // if Ashes of Embers is installed
+
+  COPY_EXISTING ~weapprof.2da~ ~override~
+    SET "column" = (22 + "%NMSUNE%")
+    FOR (row = 2; row < 35 ; row = row + 1) BEGIN
+      SET_2DA_ENTRY_LATER ~aoe~ row column ~1~
+    END
+    SET_2DA_ENTRIES_NOW ~aoe~ 1
+    BUT_ONLY_IF_IT_CHANGES
+
+END
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~spwi411.spl~ ~override/nmsun07.spl~ // emotion
+              ~sppr503.spl~ ~override/nmsun09.spl~ // flame strike
+              ~spwi607.spl~ ~override/nmsun11.spl~ // mislead
+              ~spwi708.spl~ ~override/nmsun14.spl~ // mantle
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY ~Divine_Remix/cleric/Sune/nmsun0b.spl~ ~override~  // Shock Flail (innate)
+  SAY NAME1 @12403
+  SAY NAME2 @12403
+  SAY UNIDENTIFIED_DESC @12404
+  SAY DESC @12404
+
+COPY ~Divine_Remix/cleric/Sune/nmisune.bam~  ~override~
+COPY ~Divine_Remix/cleric/Sune/nmsune00.itm~ ~override~  // Shock Flail +0
+  SAY NAME1 @12403
+  SAY NAME2 @12403
+  SAY UNIDENTIFIED_DESC @12404
+  SAY DESC @12404
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~nmsune00.itm~ ~override/nmsune01.itm~  // shock flail +1
+              ~nmsune00.itm~ ~override/nmsune02.itm~  // shock flail +2
+              ~nmsune00.itm~ ~override/nmsune03.itm~  // shock flail +3
+              ~nmsune00.itm~ ~override/nmsune04.itm~  // shock flail +4
+              ~nmsune00.itm~ ~override/nmsune05.itm~  // shock flail +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C "%weap_idx%"
+  WRITE_SHORT 0x84 (5 - "%weap_idx%")
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // hla table and abilities if ToB is installed
+
+  INCLUDE ~Divine_Remix/lib/extra_regexp_vars.tph~
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_good.tph~ // removes inappropriate spells for good deities
+  COPY ~Divine_Remix/cleric/Sune/lusun.2da~ ~override~
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/as_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cm_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/di_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/gu_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/pr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/sn_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/th_hla.2da~
+    LAUNCH_PATCH_MACRO ~hla_remove_good~ // removes inappropriate spells for good deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  ACTION_IF NOT FILE_EXISTS_IN_GAME ~cdprrmg.spl~ THEN BEGIN
+
+    COPY_EXISTING ~spcl904.spl~ ~override/cdprrmg.spl~  // resist magic
+      SAY UNIDENTIFIED_DESC @177
+
+  END
+
+  COPY_EXISTING ~nmsune.2da~ ~override~
+    SET_2DA_ENTRY 1 25 51 ~AP_CDHLYSYM~
+
+  EXTEND_TOP ~baldur.bcs~   ~Divine_Remix/cleric/Sune/baldur.baf~
+  EXTEND_TOP ~baldur25.bcs~ ~Divine_Remix/cleric/Sune/baldur.baf~
+
+  COPY ~Divine_Remix/cleric/Sune/nmisuhly.bam~ ~override~ // holy symbol
+  COPY ~Divine_Remix/cleric/Sune/nmpsuhly.bam~ ~override~
+  COPY ~Divine_Remix/cleric/Sune/nmsuhly.itm~  ~override~
+    SAY NAME1 @12405
+    SAY NAME2 @12405
+    SAY UNIDENTIFIED_DESC @12406
+    SAY DESC @12406
+
+END
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Feywarden of Corellon kit                        \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @12700 DESIGNATED 127
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+
+ADD_KIT ~A#FEYWARDEN~
+  ~A#FEYWARDEN                0           0           1           1           0           1           0           0~
+  ~A#FEYWARDEN 0 0 0 0 2 2 0 2 0 0 0 0 0 0 0 0 2 2 0 0 2 2 2 0 0 0 0 2 2 2 2 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~A#FEYWARDEN                0       0       0       0       9       0~
+  ~A#FEYWARDEN                0       0       0       0       0       1~
+  ~A#FEYWARDEN                0       0       0       0       17      0~
+  ~A#FEYWARDEN                0       0       0       0       15      0~
+  ~A#FEYWARDEN                0       0       0       1       0       0       1       1       0~
+  ~A#FEYWARDEN                1       0       1       1       0       1~
+  ~Divine_Remix/cleric/Corellon/a#feyw.2da~
+  ~K_C_E K_C_HE~
+  ~0x00004000	3~
+  ~fey~
+  ~CHAN09 * HELM07 BAG20 RING06 RING21 * BOOT01 AMUL19 BRAC16 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 HAMM07 SW1H27 STAF08~
+  SAY @12701
+  SAY @12702
+  SAY @12703
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_good.tph~ // removes inappropriate spells for good deities
+COPY_EXISTING ~a#feyw.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/as_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cm_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wa_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wd_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/an_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cs_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pl_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/th_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~spell_remove_good~ // removes inappropriate spells for good deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~j#aoev22.txt~ THEN BEGIN // if Ashes of Embers is installed
+
+  COPY_EXISTING ~weapprof.2da~ ~override~
+    SET "column" = (22 + "%A#FEYWARDEN%")
+    FOR (row = 2; row < 25 ; row = row + 1) BEGIN
+      SET_2DA_ENTRY_LATER ~aoe~ row column ~2~
+    END
+    SET_2DA_ENTRY_LATER ~aoe~ 4 column ~0~
+    SET_2DA_ENTRY_LATER ~aoe~ 9 column ~0~
+    SET_2DA_ENTRIES_NOW ~aoe~ 1
+    BUT_ONLY_IF_IT_CHANGES
+END
+
+//save vs.death bonus
+COPY ~Divine_Remix/cleric/Corellon/a#fey0a.spl~ ~override~
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~spwi417.spl~ ~override/a#fey07.spl~ // enchanted weapon
+              ~spwi510.spl~ ~override/a#fey09.spl~ // spell immunity
+              ~spwi611.spl~ ~override/a#fey11.spl~ // protection from magical weapons
+              ~spwi714.spl~ ~override/a#fey14.spl~ // prismatic spray
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY ~Divine_Remix/cleric/Corellon/a#fey0b.spl~ ~override~  // Sahandrian (innate)
+  SAY NAME1 @12704
+  SAY NAME2 @12704
+  SAY UNIDENTIFIED_DESC @12705
+  SAY DESC @12705
+
+COPY ~Divine_Remix/cleric/Corellon/a#ifey.bam~  ~override~
+COPY ~Divine_Remix/cleric/Corellon/a#fey00.itm~ ~override~  // Sahandrian +0
+  SAY NAME1 @12704
+  SAY NAME2 @12704
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~a#fey00.itm~ ~override/a#fey01.itm~  // sahandrian +1
+              ~a#fey00.itm~ ~override/a#fey02.itm~  // sahandrian +2
+              ~a#fey00.itm~ ~override/a#fey03.itm~  // sahandrian +3
+              ~a#fey00.itm~ ~override/a#fey04.itm~  // sahandrian +4
+              ~a#fey00.itm~ ~override/a#fey05.itm~  // sahandrian +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C "%weap_idx%"
+  WRITE_SHORT 0x84 (5 - "%weap_idx%")
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // hla table and abilities if ToB is installed
+
+  INCLUDE ~Divine_Remix/lib/extra_regexp_vars.tph~
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_good.tph~ // removes inappropriate spells for good deities
+  COPY ~Divine_Remix/cleric/Corellon/lufey.2da~ ~override~
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/as_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cm_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/co_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/di_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/gu_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ne_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/pr_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/sn_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/wa_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/wd_hla.2da~
+    LAUNCH_PATCH_MACRO ~hla_remove_good~ // removes inappropriate spells for good deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  ACTION_IF NOT FILE_EXISTS_IN_GAME ~cdprwrl.spl~ THEN BEGIN
+
+    COPY_EXISTING ~spcl900.spl~ ~override/cdprwrl.spl~ // hla whirlwind
+      SAY UNIDENTIFIED_DESC @10174
+
+  END
+
+  COPY_EXISTING ~spwi921.spl~ ~override/a#hlaal.spl~ //Improved Alacrity
+    SAY IDENTIFIED_DESC @12706
+    SAY UNIDENTIFIED_DESC @12706
+    READ_LONG  0x64 "abil_off" ELSE 0
+    READ_SHORT 0x68 "abil_num" ELSE 0
+    READ_ASCII ("%abil_off%" + 0x04) "bam" (8) // reads the bam filename from ability
+    WRITE_SHORT 0x1c 4                         // sets spell type to innate (4)
+    WRITE_LONG  0x34 1                         // sets spell level to 1 to avoid scripting issues
+    WRITE_EVALUATED_ASCII 0x3a "%bam%" #8      // writes the bam filename from abilities to spell icon
+    FOR (index = 0 ; index < abil_num ; index = index + 1) BEGIN
+      WRITE_SHORT ("%abil_off%" + 0x02 + (0x28 * "%index%")) 4 // changes ability icon location to innate (4)
+    END
+
+  COPY_EXISTING ~a#feyw.2da~ ~override~
+    SET_2DA_ENTRY 1 25 51 ~AP_CDHLYSYM~
+
+  EXTEND_TOP ~baldur.bcs~   ~Divine_Remix/cleric/Corellon/baldur.baf~
+  EXTEND_TOP ~baldur25.bcs~ ~Divine_Remix/cleric/Corellon/baldur.baf~
+
+  COPY ~Divine_Remix/cleric/Corellon/a#feyhly.bam~ ~override~ // holy symbol
+  COPY ~Divine_Remix/cleric/Corellon/a#feyhly.itm~ ~override~
+    SAY NAME1 @12707
+    SAY NAME2 @12707
+    SAY UNIDENTIFIED_DESC @12708
+    SAY DESC @12708
+
+END
+
+/////                                                  \\\\\
+///// Stronghold fixes                                 \\\\\
+/////                                                  \\\\\
+
+EXTEND_TOP ~ar0900.bcs~   ~Divine_Remix/cleric/Corellon/ar0900.baf~
+EXTEND_TOP ~ar0902.bcs~   ~Divine_Remix/cleric/Corellon/ar0902.baf~
+COMPILE ~Divine_Remix/cleric/Corellon/corellon.d~
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Strifeleader of Cyric kit                        \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @13001 DESIGNATED 130
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+
+
+ADD_KIT ~A#CYRIC~
+  ~A#CYRIC                  0           0           1           1           0           1           0           0~
+  ~A#CYRIC 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 1 1 0 0 1 1 1 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~A#CYRIC	        0       0       0       0       9       0~
+  ~A#CYRIC		0	0	0	0	0	0~
+  ~A#CYRIC		0	0	0	0	17	0~
+  ~A#CYRIC		0	0	0	0	15	0~
+  ~A#CYRIC		0	0	1	0	0	1	0	1	1~
+  ~A#CYRIC		1	0	1	1	0	1~
+  ~Divine_Remix/cleric/cyric/a#cyric.2da~
+  ~K_C_H    K_C_D   K_C_G   K_C_E   K_C_HE   K_C_HL   K_C_HO~
+  ~0x00004000	3~
+  ~cyr~
+  ~CHAN09 * HELM07 BAG20 RING06 RING21 * BOOT01 AMUL19 BRAC16 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 HAMM07 SW1H27 STAF08~
+  SAY @13002
+  SAY @13003
+  SAY @13004
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_evil.tph~ // removes inappropriate spells for evil deities
+COPY_EXISTING ~a#cyric.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/as_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cm_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/wa_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/we_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/nu_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~spell_remove_evil~ // removes inappropriate spells for evil deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~j#aoev22.txt~ THEN BEGIN // if Ashes of Embers is installed
+
+  COPY_EXISTING ~weapprof.2da~ ~override~
+    SET "column" = (22 + "%A#CYRIC%")
+    FOR (row = 2; row < 35 ; row = row + 1) BEGIN
+      SET_2DA_ENTRY_LATER ~aoe~ row column ~1~
+    END
+    SET_2DA_ENTRIES_NOW ~aoe~ 1
+    BUT_ONLY_IF_IT_CHANGES
+END
+
+//Dread Blast innate
+COPY ~Divine_Remix/cleric/Cyric/a#cyr07.spl~ ~override~
+  SAY NAME1 @13000
+  SAY NAME2 @13000
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~spwi508.spl~ ~override/a#cyr09.spl~ // chaos
+              ~spwi614.spl~ ~override/a#cyr11.spl~ // death fog
+              ~spwi711.spl~ ~override/a#cyr14.spl~ // sphere of chaos
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // hla table and abilities if ToB is installed
+
+  INCLUDE ~Divine_Remix/lib/extra_regexp_vars.tph~
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~
+  INCLUDE ~Divine_Remix/lib/macro_hla_remove_evil.tph~ // removes inappropriate spells for evil deities
+  COPY ~Divine_Remix/cleric/Cyric/lucyr.2da~ ~override~ // HLA file
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/as_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/cm_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/co_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/gu_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ne_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/su_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/sn_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/wa_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/we_hla.2da~
+    LAUNCH_PATCH_MACRO ~hla_remove_evil~ // removes inappropriate spells for evil deities
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+  //Compile dialogue alteration for Cyric in the Pocket Plane
+  COMPILE ~Divine_Remix/cleric/Cyric/cyricpp.d~
+
+  ACTION_IF NOT FILE_EXISTS_IN_GAME ~cdprwrl.spl~ THEN BEGIN
+
+    COPY_EXISTING ~spcl900.spl~ ~override/cdprwrl.spl~ // hla whirlwind
+      SAY UNIDENTIFIED_DESC @10174
+  
+  END
+
+  ACTION_IF NOT FILE_EXISTS_IN_GAME ~cdprevd.spl~ THEN BEGIN
+
+    COPY_EXISTING ~spcl913.spl~ ~override/cdprevd.spl~ // hla evasion
+      SAY UNIDENTIFIED_DESC @10176
+
+  END
+
+  COPY_EXISTING ~a#cyric.2da~ ~override~
+    SET_2DA_ENTRY 0 25 51 ~AP_CDHLYSYM~
+
+  EXTEND_TOP ~baldur.bcs~   ~Divine_Remix/cleric/cyric/baldur.baf~
+  EXTEND_TOP ~baldur25.bcs~ ~Divine_Remix/cleric/cyric/baldur.baf~
+
+  COPY ~Divine_Remix/cleric/cyric/a#cyr25.itm~ ~override~
+    SAY NAME1 @13005
+    SAY NAME2 @13005
+    SAY UNIDENTIFIED_DESC @13006
+    SAY DESC @13006
+
+END
+
+COPY ~Divine_Remix/cleric/cyric/a#cyr0b.spl~ ~override~  // Razor's Edge (innate)
+  SAY NAME1 @13007
+  SAY NAME2 @13007
+  SAY UNIDENTIFIED_DESC @13008
+  SAY DESC @13008
+
+COPY ~Divine_Remix/cleric/cyric/a#cyr00.itm~ ~override~  // Razor's Edge +0
+  SAY NAME1 @13007
+  SAY NAME2 @13007
+  SAY UNIDENTIFIED_DESC @13008
+  SAY DESC @13008
+  SET "weap_idx" = 0
+
+COPY_EXISTING ~a#cyr00.itm~ ~override/a#cyr01.itm~  // Razor's Edge +1
+              ~a#cyr00.itm~ ~override/a#cyr02.itm~  // Razor's Edge +2
+              ~a#cyr00.itm~ ~override/a#cyr03.itm~  // Razor's Edge +3
+              ~a#cyr00.itm~ ~override/a#cyr04.itm~  // Razor's Edge +4
+              ~a#cyr00.itm~ ~override/a#cyr05.itm~  // Razor's Edge +5
+  SET "weap_idx" = ("%weap_idx%" + 1)
+  WRITE_LONG  0x60 "%weap_idx%"
+  WRITE_SHORT 0x86 "%weap_idx%"
+  WRITE_SHORT 0x8C ("%weap_idx%" + 1)
+  WRITE_SHORT 0x84 (7 - "%weap_idx%")
+
+/////                                                  \\\\\
+///// Stronghold fixes                                 \\\\\
+/////                                                  \\\\\
+
+EXTEND_TOP ~ar0900.bcs~   ~Divine_Remix/cleric/cyric/ar0900.baf~
+EXTEND_TOP ~ar0902.bcs~   ~Divine_Remix/cleric/cyric/ar0904.baf~
+COMPILE ~Divine_Remix/cleric/cyric/cyric.d~
+
+
+//long, boring spell replace done via macros
+INCLUDE ~Divine_Remix/lib/macro_spellbook_cyric.tph~  // defines patch macro
+INCLUDE ~Divine_Remix/lib/macro_spellbook_wrapup.tph~ // defines patch macro
+COPY_EXISTING ~ar18prie.cre~ ~override~ // priest of cyric
+              ~mvpries.cre~  ~override~ // priest of cyric
+              ~slapri.cre~   ~override~ // priest of cyric
+              ~pptiax.cre~   ~override~ // tiax
+              ~pptiax2.cre~  ~override~ // tiax
+              ~dcleric.cre~  ~override~ // mad cleric
+  LAUNCH_PATCH_MACRO ~spellbook_cyric~  // change spellbook
+  LAUNCH_PATCH_MACRO ~spellbook_wrapup~ // final offset adjustments
+  BUT_ONLY_IF_IT_CHANGES
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Druid Remix                                      \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @20000 DESIGNATED 200
+GROUP @11
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+
+//Description updates
+STRING_SET 9560 @20001
+STRING_SET 9579 @20002
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN
+
+  //Jaheira's ToB armor change to Ankheg Plate
+  COPY_EXISTING ~jahei14.cre~ ~override~
+    READ_LONG  0x2bc "itm_off"
+    READ_LONG  0x2c0 "itm_num"
+    FOR ( index = 0 ; index < itm_num ; index = index + 1 ) BEGIN
+      READ_ASCII ("%itm_off%" + (0x14 * "%index%")) "item"
+      PATCH_IF ("%item%" STRING_COMPARE_CASE "chan08" = 0) BEGIN
+        WRITE_ASCII ("%itm_off%" + (0x14 * "%index%")) "plat06" #8
+      END
+    END
+    BUT_ONLY_IF_IT_CHANGES
+
+END
+
+//Alignment changes
+COPY_EXISTING ~alignmnt.2da~ ~override~
+  FOR (index = 2 ; index < 9 ; index = index + 2) BEGIN
+    SET_2DA_ENTRY  6 "%index%" 10 ~1~ // Druid
+    SET_2DA_ENTRY 15 "%index%" 10 ~1~ // Fighter-Druid
+    SET_2DA_ENTRY 41 "%index%" 10 ~1~ // Totemic
+    SET_2DA_ENTRY 42 "%index%" 10 ~1~ // Shapeshifter
+    SET_2DA_ENTRY 43 "%index%" 10 ~1~ // Avenger: 'BEAST_FRIEND'
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+PRINT @3
+COPY_EXISTING_REGEXP GLOB ~^.+\.itm$~ ~override~
+  READ_BYTE 0x1C "type" ELSE 0
+  PATCH_IF (("%type%" = 2) OR (("%type%" > 59) AND ("%type%" < 68))) BEGIN // any armor
+    READ_BYTE 0x1F "fighter_druid"
+    READ_BYTE 0x21 "druid"
+    PATCH_IF (("%druid%"  BAND 0b01000000) = 0b01000000) BEGIN // If unusable by druids
+      WRITE_BYTE 0x1F ("%fighter_druid%" BOR 0b00010000)        // Making sure Fighter-Druids are restricted to Druid items only.
+    END
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Oozemaster Druid kit                             \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @20301 DESIGNATED 203
+GROUP @11
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~200~ @8
+
+ADD_KIT ~A#OOZE~
+  ~A#OOZE                  0           0           1           1           0           1           0           0~
+  ~A#OOZE 0 0 0 0 1 1 0 1 0 0 0 0 0 0 1 1 0 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~A#OOZE	0	0	0	0	12	7~
+  ~A#OOZE		0	0	0	0	0	0~
+  ~A#OOZE		0	0	0	0	17	0~
+  ~A#OOZE		0	0	0	0	15	0~
+  ~A#OOZE		0	1	0	1	1	1	0	1	0~
+  ~A#OOZE		1	0	0	0	0	0~
+  ~Divine_Remix/Druid/Oozemaster/a#ooze.2da~
+  ~K_D_H    K_D_D   K_D_G   K_D_E   K_D_HE   K_D_HL   K_D_HO~
+  ~0x00004000 11~
+  ~ooz~
+  ~LEAT20 * HELM19 BAG27 RING06 RING31 CLCK02 BOOT01 AMUL19 BRAC14 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 HAMM07 SW1H27 STAF08~
+  SAY @20302
+  SAY @20303
+  SAY @20304
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+COPY_EXISTING ~a#ooze.2da~ ~override~
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/we_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+ACTION_IF FILE_EXISTS_IN_GAME ~j#aoev22.txt~ THEN BEGIN // if Ashes of Embers is installed
+
+  COPY_EXISTING ~weapprof.2da~ ~override~
+    SET "column" = (22 + "%A#OOZE%")
+    FOR (row = 2; row < 35 ; row = row + 1) BEGIN
+      SET_2DA_ENTRY_LATER ~aoe~ row column ~1~
+    END
+    SET_2DA_ENTRIES_NOW ~aoe~ 1
+    BUT_ONLY_IF_IT_CHANGES
+
+END
+
+//Paralytic Touch
+COPY_EXISTING ~spwi218.spl~ ~override/a#ooze1.spl~ //Ghoul Touch
+  SAY NAME1 @20305
+  SAY NAME2 @20305
+  READ_LONG  0x64 "abil_off" ELSE 0
+  READ_SHORT 0x68 "abil_num" ELSE 0
+  READ_LONG  0x6A "fx_off" ELSE 0
+  READ_ASCII ("%abil_off%" + 0x04) "bam" (8) // reads the bam filename from ability
+  WRITE_SHORT 0x1C 4                         // sets spell type to innate (4)
+  WRITE_LONG  0x34 1                         // sets spell level to 1 to avoid scripting issues
+  WRITE_EVALUATED_ASCII 0x3A "%bam%" #8      // writes the bam filename from abilities to spell icon
+  FOR ( index = 0 ; index < abil_num ; index = index + 1 ) BEGIN
+    WRITE_SHORT ("%abil_off%" + 0x02 + (0x28 * "%index%")) 4 // changes ability icon location to innate (4)
+    READ_SHORT  ("%abil_off%" + 0x12 + (0x28 * "%index%")) "speed" // reads casting speed
+    PATCH_IF ("%speed%" > 3) BEGIN
+      WRITE_SHORT  ("%abil_off%" + 0x12 + (0x28 * "%index%")) ("%speed%" - 2) // reduces casting speed
+    END ELSE BEGIN
+      WRITE_SHORT  ("%abil_off%" + 0x12 + (0x28 * "%index%")) 0 // makes instant
+    END
+    READ_SHORT  ("%abil_off%" + 0x1e + (0x28 * "%index%")) "abil_fx_num" ELSE 0
+    READ_SHORT  ("%abil_off%" + 0x20 + (0x28 * "%index%")) "abil_fx_idx" ELSE 0
+    FOR ( index2 = 0 ; index2 < abil_fx_num ; index2 = index2 + 1 ) BEGIN // loops through and changes item created
+      READ_SHORT ("%fx_off%" +        (0x30 * ("%abil_fx_idx%" + "%index2%" - 1))) "opcode" ELSE 0
+      READ_ASCII ("%fx_off%" + 0x14 + (0x30 * ("%abil_fx_idx%" + "%index2%" - 1))) "item" ELSE 0
+      PATCH_IF (("%opcode%" = 111) AND ("%item%" STRING_COMPARE_CASE "ghoult" = 0)) BEGIN
+        WRITE_ASCII ("%fx_off%" + 0x14 + (0x30 * ("%abil_fx_idx%" + "%index2%" - 1))) ~a#oozet~ #8
+      END
+    END
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+//Renaming called item
+COPY_EXISTING ~ghoult.itm~ ~override/a#oozet.itm~
+  SAY NAME1 @20305
+  SAY NAME2 @20305
+
+//Shapeshift to mustard jelly
+COPY ~Divine_Remix/druid/oozemaster/a#ooze3.spl~ ~override~
+  SAY NAME1 @20306
+  SAY NAME2 @20306
+
+// shapeshift to nat form
+COPY ~Divine_Remix/druid/oozemaster/a#ooze3a.spl~ ~override~
+
+COPY ~Divine_Remix/druid/oozemaster/a#ooze2.spl~ ~override~ //immune to poison
+     ~divine_remix/druid/oozemaster/a#ooze4.spl~ ~override~ //immune to acid
+     ~divine_remix/druid/oozemaster/a#ooze5.spl~ ~override~ //immune to disease
+     ~divine_remix/druid/oozemaster/a#ooze6.spl~ ~override~ //immune to blindness, sleep, paralysis, stunning and critical hits
+     ~divine_remix/druid/oozemaster/a#ooze7.spl~ ~override~ //charisma drop
+  SAY NAME1 #-1
+  SAY NAME2 #-1
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // hla table and abilities if ToB is installed
+
+  INCLUDE ~Divine_Remix/lib/macro_build_hla_table.tph~ // macro for building HLA tables
+
+  COPY ~Divine_Remix/druid/Oozemaster/luooz.2da~ ~override~
+    APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/an_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ex_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ea_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ee_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ef_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/ew_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/pl_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/sn_hla.2da~
+    APPEND_FILE ~Divine_Remix/spheres/we_hla.2da~
+    LAUNCH_PATCH_MACRO ~build_hla_table~ // re-order HLAs, remove dupes, and re-index
+
+END
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Bowslinger                                       \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @40300 DESIGNATED 403
+GROUP @13
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+
+ADD_KIT NMRNBSLN // ROWNAME in KITLIST.2da
+  ~NMRNBSLN                1           1           1           1           1           1           1           1~ // CLASWEAP.2DA (weapons class can use)
+  ~NMRNBSLN 1 1 1 0 0 0 0 1 0 1 1 0 0 0 0 1 0 0 0 0 0 0 0 5 5 5 2 2 1 1 1 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~ // WEAPPROF (proficiency points this kit can place)
+  ~NMRNBSLN                13      13      14      0       14      15~ // ABCLASRQ.2da (minimum stats)
+  ~NMRNBSLN                0       0       0       0       0       0~ // ABCLSMOD.2da (stat modifiers)
+  ~NMRNBSLN                17      17      0       0       17      0~ // ABDCDSRQ.2da (minimum stats needed to dual-class from this class)
+  ~NMRNBSLN                15      15      0       0       15      0~ // ABDCSCRQ.2da (minimum stats needed to dual-class to this class)
+  ~NMRNBSLN                1       0       0       1       0       0       1       0       0~ // ALIGNMNT.2da (alignments this kit can be)
+  ~NMRNBSLN                0       1       0       0       0       0~ // DUALCLAS.2da (classes this kit can be dualed with)
+  ~Divine_Remix/ranger/Bowslinger/nmrnbsln.2da~ // CLAB****.2da (abilities file)
+  ~K_R_E K_R_HE~ // K_B_H.2da, K_B_HE.2da, etc (class/race restrictions)
+  ~0x00008000 12~ // UNUSABLE in KITLIST.2da (item restriction flag this kit uses)
+  ~Ra2~ // LuBa0.2da, LuBa1.2da, etc (high level abilities file)
+  ~LEAT20 DART03,40 HELM07 BAG26 RING06 RING31 CLCK27 BOOT01 AMUL19 BRAC10 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 BOW11 BOW19 XBOW06~ // ToB starting equipment (PC only)
+  SAY @40301 // Kit name without capitals
+  SAY @40302 // Kit name with capitals
+  SAY @40303 // Full kit description
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_add_ranger_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_shift_ranger_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_good.tph~ // removes inappropriate spells for good deities
+COPY_EXISTING ~nmrnbsln.2da~ ~override~
+  LAUNCH_PATCH_MACRO ~add_ranger_spells~ // add generic cleric spells
+  LAUNCH_PATCH_MACRO ~shift_ranger_spells~ // shift generic ranger spells
+  LAUNCH_PATCH_MACRO ~spell_remove_good~ // removes inappropriate spells for good deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY ~Divine_Remix/ranger/Bowslinger/nmrnbs1.spl~ ~override~ // -1 to damage with melee
+     ~Divine_Remix/ranger/Bowslinger/nmrnbs2.spl~ ~override~ // Called Shot
+
+COPY ~Divine_Remix/ranger/Bowslinger/nmrnbs3.spl~ ~override~ // Speed Shot
+  SAY NAME1 @40304
+  SAY NAME2 @40304
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~spwi203.spl~ ~override/nmrnbs4.spl~ // detect invisibility
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Feralan                                          \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @40600 DESIGNATED 406
+GROUP @13
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_PREDICATE NOT FILE_EXISTS_IN_GAME ~a#feral.2da~ @9
+
+// shapeshifters get locked out of all armor, either by the druid flag or their individual kit flag
+COPY_EXISTING_REGEXP GLOB ~^.+\.itm$~ ~override~
+  READ_BYTE 0x1C "type" ELSE 0 // skips invalid files
+  PATCH_IF (("%type%" = 2) OR (("%type%" > 59) AND ("%type%" < 68))) BEGIN
+    READ_BYTE 0x21 "druid"
+    READ_BYTE 0x29 "shapeshifter"
+    PATCH_IF (("%druid%" BAND 0b01000000) = 0b01000000) BEGIN // if unusable by druids
+      WRITE_BYTE 0x29 ("%shapeshifter%" BAND 0b11101111) // remove redundant shapeshifter restriction; shapeshifters can't use it 'coz of druid flag
+    END ELSE BEGIN
+      WRITE_BYTE 0x29 ("%shapeshifter%" BOR  0b00010000) // making unusable by shapeshifters
+    END
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY_EXISTING ~spcl321.spl~ ~override/a#fera02.spl~ // 'Feral Rage' innate
+  SAY NAME1 @40604
+
+COPY ~Divine_Remix/ranger/Feralan/A#fera03.spl~ ~override~ // 'Call of the Wild' innate
+  SAY NAME1 @40605
+
+COPY ~Divine_Remix/ranger/Feralan/a#fera01.cre~ ~override~ // Wild Dog
+  SAY NAME1 @40606
+  SAY NAME2 @40606
+
+COPY ~Divine_Remix/ranger/Feralan/a#fera02.cre~ ~override~ // Wolf
+  SAY NAME1 @40607
+  SAY NAME2 @40607
+
+COPY ~Divine_Remix/ranger/Feralan/a#fera03.cre~ ~override~ // Dire Wolf
+  SAY NAME1 @40608
+  SAY NAME2 @40608
+
+COPY ~Divine_Remix/ranger/Feralan/a#fera04.cre~ ~override~ // Pack Leader
+  SAY NAME1 @40609
+  SAY NAME2 @40609
+
+COPY ~Divine_Remix/ranger/Feralan/a#fera01.spl~ ~override~ // +10% Stealth
+     ~Divine_Remix/ranger/Feralan/a#fera01.eff~ ~override~
+     ~Divine_Remix/ranger/Feralan/a#fera02.eff~ ~override~
+     ~Divine_Remix/ranger/Feralan/a#fera03.eff~ ~override~
+     ~Divine_Remix/ranger/Feralan/a#fera04.eff~ ~override~
+
+ADD_KIT ~A#FERALAN~
+  ~A#FERALAN		1	1	1	1	1	1	1	1~
+  ~A#FERALAN 1 1 2 2 2 1 2 2 1 1 1 2 1 1 1 2 2 2 2 1 1 2 2 1 2 2 2 2 2 2 2 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~A#FERALAN	13	13	14	0	14	0~
+  ~A#FERALAN		0	0	0	0	0	-2~
+  ~A#FERALAN		17	17	0	0	17	0~
+  ~A#FERALAN		15	15	0	0	15	0~
+  ~A#FERALAN		0	0	0	1	0	0	1	0	0~
+  ~A#FERALAN		0	1	0	0	0	0~
+  ~Divine_Remix/ranger/Feralan/a#feral.2da~
+  ~K_R_H K_R_HE K_R_E~
+  ~0x10000000	12~
+  ~ra0~
+  ~* * HELM19 BAG27 RING06 RING31 CLCK02 BOOT01 AMUL19 BRAC14 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 HAMM07 SW1H27 STAF08~
+  SAY @40601
+  SAY @40602
+  SAY @40603
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_add_ranger_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_shift_ranger_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_good.tph~ // removes inappropriate spells for good deities
+COPY_EXISTING ~a#feral.2da~ ~override~
+  LAUNCH_PATCH_MACRO ~add_ranger_spells~ // add generic ranger spells
+  LAUNCH_PATCH_MACRO ~shift_ranger_spells~ // shift generic ranger spells
+  LAUNCH_PATCH_MACRO ~spell_remove_good~ // removes inappropriate spells for good deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Forest Runner                                    \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @40900 DESIGNATED 409
+GROUP @13
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+
+ADD_KIT NMRNFRRN // ROWNAME in KITLIST.2da
+  ~NMRNFRRN                1           1           1           1           1           1           1           1~ // CLASWEAP.2DA (weapons class can use)
+  ~NMRNFRRN 2 2 2 2 2 2 2 2 2 3 2 1 1 2 2 3 1 2 2 2 2 2 3 1 3 2 2 2 2 2 2 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~ // WEAPPROF (proficiency points this kit can place)
+  ~NMRNFRRN                13      13      14      0       14      15~ // ABCLASRQ.2da (minimum stats)
+  ~NMRNFRRN                0       0       0       0       0       0~ // ABCLSMOD.2da (stat modifiers)
+  ~NMRNFRRN                17      17      0       0       17      0~ // ABDCDSRQ.2da (minimum stats needed to dual-class from this class)
+  ~NMRNFRRN                15      15      0       0       15      0~ // ABDCSCRQ.2da (minimum stats needed to dual-class to this class)
+  ~NMRNFRRN                1       0       0       1       0       0       1       0       0~ // ALIGNMNT.2da (alignments this kit can be)
+  ~NMRNFRRN                0       1       0       0       0       0~ // DUALCLAS.2da (classes this kit can be dualed with)
+  ~Divine_Remix/ranger/ForestRunner/nmrnfrrn.2da~ // CLAB****.2da (abilities file)
+  ~K_R_E K_R_H K_R_HE~ // K_B_H.2da, K_B_HE.2da, etc (class/race restrictions)
+  ~0x00008000 12~ // UNUSABLE in KITLIST.2da (item restriction flag this kit uses)
+  ~Ra4~ // LuBa0.2da, LuBa1.2da, etc (high level abilities file)
+  ~LEAT20 DART03,40 HELM07 BAG26 RING06 RING31 CLCK27 BOOT01 AMUL19 BRAC10 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 BOW11 BOW19 XBOW06~ // ToB starting equipment (PC only)
+  SAY @40901 // Kit name without capitals
+  SAY @40902 // Kit name with capitals
+  SAY @40903 // Full kit description
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_add_ranger_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_shift_ranger_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_good.tph~ // removes inappropriate spells for good deities
+COPY_EXISTING ~nmrnfrrn.2da~ ~override~
+  LAUNCH_PATCH_MACRO ~add_ranger_spells~ // add generic ranger spells
+  LAUNCH_PATCH_MACRO ~shift_ranger_spells~ // shift generic ranger spells
+  LAUNCH_PATCH_MACRO ~spell_remove_good~ // removes inappropriate spells for good deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY ~Divine_Remix/ranger/ForestRunner/nmrnfr1.spl~ ~override~ // +5% Stealth
+
+COPY ~Divine_Remix/ranger/ForestRunner/nmrnfr2.spl~ ~override~ // 'Inspire' innate
+  SAY NAME1 @40904
+  SAY NAME2 @40904
+  SAY 0xfe  @40905
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Justifier                                        \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @41200 DESIGNATED 412
+GROUP @13
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_PREDICATE NOT FILE_EXISTS_IN_GAME ~a#justif.2da~ @9
+
+ADD_KIT ~A#JUSTIFIER~
+  ~A#JUSTIFIER		1	1	1	1	1	1	1	1~
+  ~A#JUSTIFIER 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+  ~A#JUSTIFIER	13	13	14	0	14	0~
+  ~A#JUSTIFIER		0	0	0	0	0	0~
+  ~A#JUSTIFIER		17	17	0	0	17	0~
+  ~A#JUSTIFIER		15	15	0	0	15	0~
+  ~A#JUSTIFIER		1	0	0	0	0	0	0	0	0~
+  ~A#JUSTIFIER		0	0	0	0	0	0~
+  ~Divine_Remix/ranger/Justifier/a#justif.2da~
+  ~K_R_H K_R_HE K_R_E~
+  ~0x00004000	12~
+  ~ra0~
+  ~LEAT20 * HELM19 BAG27 RING06 RING31 CLCK02 BOOT01 AMUL19 BRAC14 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 HAMM07 SW1H27 STAF08~
+  SAY @41201
+  SAY @41202
+  SAY @41203
+
+COPY ~Divine_Remix/ranger/Justifier/a#just01.spl~ ~override~ // +10% Stealth
+     ~Divine_Remix/ranger/Justifier/a#just02.spl~ ~override~ // +1 to speed factor and to hit
+     ~Divine_Remix/ranger/Justifier/a#justns.spl~ ~override~ // Removes priest spells
+
+// change spells to innates as needed
+INCLUDE ~Divine_Remix/lib/macro_spell_to_innate.tph~ // defines patch macro
+COPY_EXISTING ~sppr103.spl~ ~override/a#justcl.spl~ // 'cure light wounds'
+              ~sppr111.spl~ ~override/a#justaf.spl~ // 'armour of faith'
+              ~spwi209.spl~ ~override/a#justlu.spl~ // 'luck'
+              ~sppr108.spl~ ~override/a#justrf.spl~ // 'remove fear'
+  LAUNCH_PATCH_MACRO ~spell_to_innate~ // change to innate spell
+  BUT_ONLY_IF_IT_CHANGES
+
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Wilderness Runner                                \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @41500 DESIGNATED 415
+GROUP @13
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+
+ADD_KIT NMRNWLRN // ROWNAME in KITLIST.2da
+  ~NMRNWLRN                1           1           1           1           1           1           1           1~ // CLASWEAP.2DA (weapons class can use)
+  ~NMRNWLRN 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 2 2 2 1 2 3 2 3 2 2 2 2 2 2 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~ // WEAPPROF (proficiency points this kit can place)
+  ~NMRNWLRN                13      13      14      0       14      15~ // ABCLASRQ.2da (minimum stats)
+  ~NMRNWLRN                0       0       0       0       0       -2~ // ABCLSMOD.2da (stat modifiers)
+  ~NMRNWLRN                17      17      0       0       17      0~ // ABDCDSRQ.2da (minimum stats needed to dual-class from this class)
+  ~NMRNWLRN                15      15      0       0       15      0~ // ABDCSCRQ.2da (minimum stats needed to dual-class to this class)
+  ~NMRNWLRN                1       0       0       1       0       0       1       0       0~ // ALIGNMNT.2da (alignments this kit can be)
+  ~NMRNWLRN                0       1       0       0       0       0~ // DUALCLAS.2da (classes this kit can be dualed with)
+  ~Divine_Remix/ranger/WildernessRunner/nmrnwlrn.2da~ // CLAB****.2da (abilities file)
+  ~K_R_E~ // K_B_H.2da, K_B_HE.2da, etc (class/race restrictions)
+  ~0x00010000 12~ // UNUSABLE in KITLIST.2da (item restriction flag this kit uses)
+  ~Ra3~ // LuBa0.2da, LuBa1.2da, etc (high level abilities file)
+  ~LEAT20 DART03,40 HELM07 BAG26 RING06 RING31 CLCK27 BOOT01 AMUL19 BRAC10 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 BOW11 BOW19 XBOW06~ // ToB starting equipment (PC only)
+  SAY @41501 // Kit name without capitals
+  SAY @41502 // Kit name with capitals
+  SAY @41503 // Full kit description
+
+// add spells to base abilities
+INCLUDE ~Divine_Remix/lib/macro_add_ranger_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_shift_ranger_spells.tph~
+INCLUDE ~Divine_Remix/lib/macro_reindex_clab.tph~
+INCLUDE ~Divine_Remix/lib/macro_spell_remove_good.tph~ // removes inappropriate spells for good deities
+COPY_EXISTING ~nmrnwlrn.2da~ ~override~
+  LAUNCH_PATCH_MACRO ~add_ranger_spells~ // add generic ranger spells
+  LAUNCH_PATCH_MACRO ~shift_ranger_spells~ // shift generic ranger spells
+  LAUNCH_PATCH_MACRO ~spell_remove_good~ // removes inappropriate spells for good deities
+  LAUNCH_PATCH_MACRO ~reindex_clab~ // re-index lines
+  BUT_ONLY_IF_IT_CHANGES
+
+COPY ~Divine_Remix/ranger/WildernessRunner/nmrnwr1.spl~ ~override~ // 'Enhanced Charm Animal' innate
+  SAY NAME1 @41504
+  SAY NAME2 @41504
+
+COPY_EXISTING ~spcl412.spl~ ~override/nmrnwr2.spl~ // Set Snare
+
+COPY ~Divine_Remix/ranger/WildernessRunner/nmrnwr3.spl~ ~override~ // +10% Fire and Cold Resistance
+     ~Divine_Remix/ranger/WildernessRunner/nmrnwr4.spl~ ~override~ // +20% set snares
+
+COPY_EXISTING ~nmrnwr4.spl~ ~override/nmrnwr5.spl~ // +5% set snares
+  WRITE_LONG 0x9e 5
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Tempus kit for Branwen                           \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @60000 DESIGNATED 600 // component 600
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~109~ @4
+
+// find tempus kit in kitlist
+COPY_EXISTING ~kitlist.2da~ ~override~
+  COUNT_2DA_ROWS ~9~ "rows"
+  FOR ( index = 31 ; index < rows ; index = index + 1 ) BEGIN
+    READ_2DA_ENTRY "%index%" 5 9 "clab"
+    PATCH_IF ("%clab%" STRING_COMPARE_CASE "a#temp" = 0) BEGIN
+      READ_2DA_ENTRY "%index%" 0 9 "A#TEMP"
+      SET "rows" = 0
+    END
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+PRINT @3
+INCLUDE ~Divine_Remix/lib/macro_spellbook_tempus.tph~ // defines patch macro
+INCLUDE ~Divine_Remix/lib/macro_spellbook_wrapup.tph~ // defines patch macro
+COPY_EXISTING_REGEXP GLOB ~^.+\.cre$~ ~override~
+  READ_LONG 0x08 "name" ELSE 0
+  PATCH_IF (("%name%" = 9499) OR ("%name%" = 9480)) BEGIN
+    LAUNCH_PATCH_MACRO ~spellbook_tempus~ // change spellbook
+    LAUNCH_PATCH_MACRO ~spellbook_wrapup~ // final offset adjustments
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Change Jaheira to NG                             \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @60500 DESIGNATED 605
+GROUP @11
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~200~ @8
+
+// this file does nothing, it just allows other mods to detect this component
+COPY_EXISTING ~SW1H01.itm~ ~override/cdjahs2NG.g3~
+
+COPY_EXISTING_REGEXP GLOB ~^jahei.+\.cre$~ ~override~
+  PATCH_IF (SOURCE_SIZE > 0x2d3) THEN BEGIN // protects against invalid files
+    WRITE_BYTE 0x27b 33 // neutral good
+  END
+  BUT_ONLY_IF_IT_CHANGES
+  
+COPY_EXISTING ~misc5x.itm~ ~override~ // harper pin
+  READ_BYTE  0x1e "use1"
+  WRITE_BYTE 0x1e (("%use1%" BOR 0b00001000) BAND 0b11111011) // adds GE-Neutral flag, removes good flag
+  BUT_ONLY_IF_IT_CHANGES
+
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////                                                  \\\\\
+///// Shar kit for Viconia                             \\\\\
+/////                                                  \\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\/////\\\\\
+
+BEGIN @61000 DESIGNATED 610
+GROUP @10
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~   ~0~ @7
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~100~ @1
+REQUIRE_COMPONENT ~Setup-Divine_Remix.tp2~ ~106~ @2
+
+ACTION_IF FILE_EXISTS_IN_GAME ~mel01.cre~ THEN BEGIN // Fate Spirit line if ToB is installed
+
+  STRING_SET 65023 @61001
+
+END
+
+// find shar kit in kitlist
+COPY_EXISTING ~kitlist.2da~ ~override~
+  COUNT_2DA_ROWS ~9~ "rows"
+  FOR ( index = 31 ; index < rows ; index = index + 1 ) BEGIN
+    READ_2DA_ENTRY "%index%" 5 9 "clab"
+    PATCH_IF ("%clab%" STRING_COMPARE_CASE "A#SHAR" = 0) BEGIN
+      SET "A#SHAR" = "%index%"
+      SET "rows" = 0
+    END
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+PRINT @3
+INCLUDE ~Divine_Remix/lib/macro_spellbook_shar.tph~ // defines patch macro
+INCLUDE ~Divine_Remix/lib/macro_spellbook_wrapup.tph~ // defines patch macro
+COPY_EXISTING_REGEXP GLOB ~^.+\.cre$~ ~override~ // spell changing test
+  READ_LONG 0x08 "name" ELSE 0
+  PATCH_IF (("%name%" = 6132) OR ("%name%" = 9489) OR ("%name%" = 9508)) BEGIN
+    LAUNCH_PATCH_MACRO ~spellbook_shar~ // change spellbook
+    LAUNCH_PATCH_MACRO ~spellbook_wrapup~ // final offset adjustments
+  END
+  BUT_ONLY_IF_IT_CHANGES
+
+INCLUDE ~Divine_Remix/lib/tob2soa.tph~ // adds ToB scripting actions to SoA
+COPY_EXISTING ~viconia.bcs~ ~override~
+  DECOMPILE_BCS_TO_BAF
+  REPLACE_TEXTUALLY
+    ~ForceSpell(Myself,CLERIC_FLAME_BLADE)~
+    ~ForceSpellRES("A#SHA0B",Myself)~
+  COMPILE_BAF_TO_BCS

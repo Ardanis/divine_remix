@@ -1,0 +1,21 @@
+DEFINE_PATCH_MACRO ~spell_remove_neutral~ BEGIN
+
+  REPLACE_TEXTUALLY ~GA_SPPR301~  ~****      ~  // animate dead
+  REPLACE_TEXTUALLY ~GA_SPPR411~  ~****      ~  // poison
+  REPLACE_TEXTUALLY ~GA_SPPR414~  ~****      ~  // cause serious wounds
+  REPLACE_TEXTUALLY ~GA_SPPR510~  ~****      ~  // cause critical wounds
+  REPLACE_TEXTUALLY ~GA_SPPR511~  ~****      ~  // slay living
+  REPLACE_TEXTUALLY ~GA_SPPR608~  ~****      ~  // harm
+  REPLACE_TEXTUALLY ~GA_SPPR609~  ~****      ~  // false dawn
+  REPLACE_TEXTUALLY ~GA_SPPR610~  ~****      ~  // dolorous decay
+  REPLACE_TEXTUALLY ~GA_SPPR612~  ~****      ~  // bolt of glory
+  REPLACE_TEXTUALLY ~GA_SPPR708~  ~****      ~  // finger of death
+  REPLACE_TEXTUALLY ~GA_CDALCRN~  ~****      ~  // alicorn lance, cdrmalcr, 2
+  REPLACE_TEXTUALLY ~GA_CDBEAST~  ~****      ~  // beast claw, cdrmbclw - 2
+  REPLACE_TEXTUALLY ~GA_CDCAUSLW~ ~****       ~ // cause light wounds, cdrmcslw - 1
+  REPLACE_TEXTUALLY ~GA_CDCAUSMW~ ~****       ~ // cause medium wounds, cdrmcsmw - 3
+  REPLACE_TEXTUALLY ~GA_NMCAUSBD~ ~****       ~ // cause blindness or deafness, cdrmcsbd - 3
+  REPLACE_TEXTUALLY ~GA_NMCAUSDS~ ~****       ~ // cause disease, cdrmcsds - 3
+  REPLACE_TEXTUALLY ~GA_NMNRGDRN~ ~****       ~ // energy drain, cdrmnrgd - 7
+
+END

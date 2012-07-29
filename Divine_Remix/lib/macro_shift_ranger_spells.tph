@@ -1,0 +1,6 @@
+// shift ranger spells over, removes spells of level > 3
+DEFINE_PATCH_MACRO ~shift_ranger_spells~ BEGIN
+  REPLACE_TEXTUALLY
+    ~newline\([ %tab%]+[^ %tab%]+[ %tab%]+[^ %tab%]+[ %tab%]+[^ %tab%]+[ %tab%]+[^ %tab%]+[ %tab%]+[^ %tab%]+[ %tab%]+\)[^ %tab%].+~
+    ~newline ****        ****        ****        ****        ****        ****        ****       \1****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****        ****~
+END

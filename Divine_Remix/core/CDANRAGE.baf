@@ -1,0 +1,46 @@
+IF
+  OnCreation()
+THEN RESPONSE #100
+  DisplayStringHead(Myself,~OnCreation Block~)
+  SetGlobalTimer("CDAnimalRageTimer","LOCALS",90)
+  SetGlobal("CDAnimalRageBerserk","LOCALS",0)
+END
+
+IF
+  GlobalTimerExpired("CDAnimalRageTimer","LOCALS")
+THEN RESPONSE #100
+  DisplayStringHead(Myself,~Final Block~)
+  SetGlobal("CDAnimalRageBerserk","LOCALS",0)
+  ChangeAIScript("",OVERRIDE)
+  ClearActions(Myself)
+END
+
+IF // once per round berserk check
+  !GlobalTimerNotExpired("CDAnimalRageRound","LOCALS")
+  Global("CDAnimalRageBerserk","LOCALS",0)
+THEN
+  RESPONSE #5
+    SetGlobalTimer("CDAnimalRageRound","LOCALS",6)
+    SetGlobal("CDAnimalRageBerserk","LOCALS",1)
+    DisplayStringHead(Myself,14036)
+  RESPONSE #95
+    DisplayStringHead(Myself,~Not Berserk~)
+    SetGlobalTimer("CDAnimalRageRound","LOCALS",6)
+END
+
+IF // attacks anyone in sight if berserked
+  Global("CDAnimalRageBerserk","LOCALS",1)
+  See([ANYONE])
+THEN RESPONSE #100
+  DisplayStringHead(Myself,~Berserk Attack~)
+  MakeUnselectable(6)
+  AttackReevaluate(LastSeenBy(Myself),6)
+END
+
+IF // attacks any enemy in sight if not berserked
+  See(NearestEnemyOf(Myself))
+THEN RESPONSE #100
+  DisplayStringHead(Myself,~Non-Berserk Attack~)
+  MakeUnselectable(6)
+  AttackReevaluate(LastSeenBy(Myself),6)
+END

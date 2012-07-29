@@ -1,0 +1,16 @@
+// append generic cleric spells
+DEFINE_PATCH_MACRO ~add_cleric_spells~ BEGIN
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cm_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_minor.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+END

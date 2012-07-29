@@ -1,0 +1,23 @@
+// final wrap-up; correcting offsets and such
+DEFINE_PATCH_MACRO ~spellbook_wrapup~ BEGIN
+
+  PATCH_IF ("%sb_delta%" > 0) BEGIN
+    WRITE_LONG 0x2A4 ("%sb_num%" - "%sb_delta%")
+    PATCH_IF NOT ("%meminfo_off%" < "%sb_off%") BEGIN
+      WRITE_LONG 0x2A8 ("%meminfo_off%" - ("%sb_delta%" * 0x0C))
+    END
+    PATCH_IF NOT ("%ms_off%" < "%sb_off%") BEGIN
+      WRITE_LONG 0x2B0 ("%ms_off%" - ("%sb_delta%" * 0x0C))
+    END
+    PATCH_IF NOT ("%slot_off%" < "%sb_off%") BEGIN
+      WRITE_LONG 0x2B8 ("%slot_off%" - ("%sb_delta%" * 0x0C))
+    END
+    PATCH_IF NOT ("%item_off%" < "%sb_off%") BEGIN
+      WRITE_LONG 0x2BC ("%item_off%" - ("%sb_delta%" * 0x0C))
+    END
+    PATCH_IF NOT ("%fx_off%" < "%sb_off%") BEGIN
+      WRITE_LONG 0x2C4 ("%fx_off%" - ("%sb_delta%" * 0x0C))
+    END
+  END
+  
+END

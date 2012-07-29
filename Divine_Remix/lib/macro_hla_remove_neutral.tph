@@ -1,0 +1,3 @@
+DEFINE_PATCH_MACRO ~hla_remove_neutral~ BEGIN
+    
+END

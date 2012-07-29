@@ -1,0 +1,60 @@
+// re-index CLAB files
+DEFINE_PATCH_MACRO ~build_hla_table~ BEGIN
+
+    COUNT_2DA_ROWS 10 "rows"
+    FOR (index4 = 0 ; index4 < ("%rows%" - 1) ; index4 = index4 + 1) BEGIN
+      READ_2DA_ENTRY ("%index4%") 0 10 "new"
+      PATCH_IF ("%new%" STRING_COMPARE_CASE "xx" = 0) BEGIN // if new entry
+        SET "start" = "%index4%"
+        SET "index" = "%index4%"
+        SET "index4" = "%rows%"
+      END
+    END
+//    PATCH_PRINT "rows are %rows% and start is %start%."
+    WHILE (index < ("%rows%" - 1)) BEGIN
+      READ_2DA_ENTRY ("%index%")     1 10 "current"
+      READ_2DA_ENTRY ("%index%" + 1) 1 10 "next"
+      PATCH_IF (("%current%" STRING_COMPARE_CASE "%next%" = 0) AND NOT ("%current%" STRING_COMPARE_CASE "ZZZZZZZZZZ" = 0)) BEGIN // if duplicate entry
+//        PATCH_PRINT "Duplicate, removing..."
+        FOR (index2 = 2 ; index2 < 10 ; index2 = index2 + 1) BEGIN
+          SET_2DA_ENTRY ("%index%" + 1) ("%index2%") 10 "*"
+        END
+        SET_2DA_ENTRY  ("%index%" + 1) 1 10 "ZZZZZZZZZZ"
+        READ_2DA_ENTRY ("%index%" + 1) 1 10 "next"
+      END
+//      PATCH_PRINT "current is %current% and next is %next%"
+      PATCH_IF ("%current%" STRING_COMPARE_CASE "%next%" > 0) BEGIN // swap rows
+//        PATCH_PRINT "Wrong order, swapping..."
+        FOR (index3 = 0 ; index3 < 10 ; index3 = index3 + 1) BEGIN
+          READ_2DA_ENTRY ("%index%")     ("%index3%") 10 "a"
+          READ_2DA_ENTRY ("%index%" + 1) ("%index3%") 10 "b"
+          SET_2DA_ENTRY  ("%index%")     ("%index3%") 10 "%b%"
+          SET_2DA_ENTRY  ("%index%" + 1) ("%index3%") 10 "%a%"
+        END
+        PATCH_IF ("%index%" > "%start%") BEGIN
+          SET "index" = "%index%" - 1
+        END
+      END ELSE BEGIN
+//        PATCH_PRINT "Correct order, advancing..."
+        SET "index" = "%index%" + 1
+      END
+    END
+    REPLACE_TEXTUALLY ~ZZZZZZZZZZ~ ~   *      ~
+    COUNT_2DA_ROWS 10 "rows"
+    FOR (index5 = "%rows%" ; index5 < 24 ; index5 = index5 + 1) BEGIN
+      APPEND_FILE ~Divine_Remix/spheres/hla_blank.2da~
+    END
+    FOR (index6 = 0 ; index6 < 24 ; index6 = index6 + 1) BEGIN
+      SET_2DA_ENTRY ("%index6%") 0 10 ("%index6%" + 1)
+    END
+    // remove empty lines from eof
+    REPLACE_TEXTUALLY ~^xx.*$~ ~~
+    SET "size" = (SOURCE_SIZE - 1)
+    READ_BYTE ("%size%") "eof"
+    WHILE ((%size% > 0) AND (("%eof%" = 0x0a) OR ("%eof%" = 0x0d))) BEGIN // removes any empty lines at the end of the file
+      DELETE_BYTES "%size%" 0x01
+      SET "size" = ("%size%" - 1)
+      READ_BYTE ("%size%") "eof"
+    END
+
+END

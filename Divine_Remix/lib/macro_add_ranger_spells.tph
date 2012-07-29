@@ -1,0 +1,9 @@
+// append generic ranger spells
+DEFINE_PATCH_MACRO ~add_ranger_spells~ BEGIN
+  APPEND_FILE ~Divine_Remix/spheres/al_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/an_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pl_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/we_major.2da~
+  APPEND_FILE ~Divine_Remix/spheres/lastline.2da~
+END

@@ -1,0 +1,144 @@
+IF
+  Kit(Player1,GODTALOS)
+  HasItem("CDHLYSYM",Player1)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player1)
+  TakeItemReplace("BELT14","CDHLYSYM",Player1)
+END  
+IF 
+  Kit(Player2,GODTALOS)
+  HasItem("CDHLYSYM",Player2)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player2)
+  TakeItemReplace("BELT14","CDHLYSYM",Player2)
+END
+IF 
+  Kit(Player3,GODTALOS)
+  HasItem("CDHLYSYM",Player3)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player3)
+  TakeItemReplace("BELT14","CDHLYSYM",Player3)
+END
+IF 
+  Kit(Player4,GODTALOS)
+  HasItem("CDHLYSYM",Player4)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player4)
+  TakeItemReplace("BELT14","CDHLYSYM",Player4)
+END
+IF 
+  Kit(Player5,GODTALOS)
+  HasItem("CDHLYSYM",Player5)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player5)
+  TakeItemReplace("BELT14","CDHLYSYM",Player5)
+END
+IF 
+  Kit(Player6,GODTALOS)
+  HasItem("CDHLYSYM",Player6)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player6)
+  TakeItemReplace("BELT14","CDHLYSYM",Player6)
+END
+IF
+  Kit(Player1,GODHELM)
+  HasItem("CDHLYSYM",Player1)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player1)
+  TakeItemReplace("BELT13","CDHLYSYM",Player1)
+END  
+IF 
+  Kit(Player2,GODHELM)
+  HasItem("CDHLYSYM",Player2)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player2)
+  TakeItemReplace("BELT13","CDHLYSYM",Player2)
+END
+IF 
+  Kit(Player3,GODHELM)
+  HasItem("CDHLYSYM",Player3)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player3)
+  TakeItemReplace("BELT13","CDHLYSYM",Player3)
+END
+IF 
+  Kit(Player4,GODHELM)
+  HasItem("CDHLYSYM",Player4)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player4)
+  TakeItemReplace("BELT13","CDHLYSYM",Player4)
+END
+IF 
+  Kit(Player5,GODHELM)
+  HasItem("CDHLYSYM",Player5)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player5)
+  TakeItemReplace("BELT13","CDHLYSYM",Player5)
+END
+IF 
+  Kit(Player6,GODHELM)
+  HasItem("CDHLYSYM",Player6)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player6)
+  TakeItemReplace("BELT13","CDHLYSYM",Player6)
+END
+IF
+  Kit(Player1,GODLATHANDER)
+  HasItem("CDHLYSYM",Player1)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player1)
+  TakeItemReplace("BELT12","CDHLYSYM",Player1)
+END  
+IF 
+  Kit(Player2,GODLATHANDER)
+  HasItem("CDHLYSYM",Player2)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player2)
+  TakeItemReplace("BELT12","CDHLYSYM",Player2)
+END
+IF 
+  Kit(Player3,GODLATHANDER)
+  HasItem("CDHLYSYM",Player3)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player3)
+  TakeItemReplace("BELT12","CDHLYSYM",Player3)
+END
+IF 
+  Kit(Player4,GODLATHANDER)
+  HasItem("CDHLYSYM",Player4)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player4)
+  TakeItemReplace("BELT12","CDHLYSYM",Player4)
+END
+IF 
+  Kit(Player5,GODLATHANDER)
+  HasItem("CDHLYSYM",Player5)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player5)
+  TakeItemReplace("BELT12","CDHLYSYM",Player5)
+END
+IF 
+  Kit(Player6,GODLATHANDER)
+  HasItem("CDHLYSYM",Player6)
+THEN 
+RESPONSE #100
+  ApplySpellRES("CDHLYSY2",Player6)
+  TakeItemReplace("BELT12","CDHLYSYM",Player6)
+END

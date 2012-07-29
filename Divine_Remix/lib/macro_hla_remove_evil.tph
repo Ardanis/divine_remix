@@ -1,0 +1,7 @@
+DEFINE_PATCH_MACRO ~hla_remove_evil~ BEGIN
+
+  REPLACE_TEXTUALLY
+    ~^xx      GA_SPPR726.+$~ // summon deva
+    ~xx      ZZZZZZZZZZ     *          *         *          *         *            *            *             *~
+    
+END

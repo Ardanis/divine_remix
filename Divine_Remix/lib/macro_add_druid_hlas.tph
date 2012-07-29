@@ -1,0 +1,14 @@
+// append generic druid spells
+DEFINE_PATCH_MACRO ~add_druid_hlas~ BEGIN
+  APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/an_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ex_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ea_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ee_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ef_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ew_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pl_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/sn_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/we_hla.2da~
+END

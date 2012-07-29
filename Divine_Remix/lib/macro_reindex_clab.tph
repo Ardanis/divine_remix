@@ -1,0 +1,8 @@
+// re-index CLAB files
+DEFINE_PATCH_MACRO ~reindex_clab~ BEGIN
+  SET "ability" = 0
+  REPLACE_EVALUATE ~^\(newline\)\|\(ABILITY[0-9A-Z]+\)[ %tab%]~ BEGIN
+    SET "ability" = ("%ability%" + 1)
+  END
+  ~ABILITY%ability% ~
+END

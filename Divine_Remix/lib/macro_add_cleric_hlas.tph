@@ -1,0 +1,13 @@
+// append generic cleric spells
+DEFINE_PATCH_MACRO ~add_cleric_hlas~ BEGIN
+  APPEND_FILE ~Divine_Remix/spheres/al_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cm_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/co_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/cr_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/di_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/gu_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/he_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/ne_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/pr_hla.2da~
+  APPEND_FILE ~Divine_Remix/spheres/su_hla.2da~
+END
